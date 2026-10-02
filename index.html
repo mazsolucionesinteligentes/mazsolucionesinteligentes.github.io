@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAZ Soluciones Inteligentes</title>
+<meta name="description" content="Automatización con inteligencia artificial para comercios, estudios y pymes: presupuestos, pedidos, extractos bancarios, gastos y alertas. Probá las demostraciones.">
+<meta property="og:title" content="MAZ Soluciones Inteligentes">
+<meta property="og:description" content="Menos tareas repetitivas, más tiempo para tu negocio. Probá las demostraciones interactivas.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="marca/maz-icono.svg">
+<meta property="og:image" content="https://mazsolucionesinteligentes.github.io/marca/maz-vista-previa.png">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .intro { padding: 64px 0 40px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: end; }
+  .intro .kicker { color: var(--ink-3); font-weight: 600; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+  .intro h1 { font-size: 44px; font-weight: 700; margin: 12px 0 16px; line-height: 1.1; letter-spacing: -.025em; }
+  .intro p { font-size: 17px; color: var(--ink-2); margin: 0; max-width: 620px; }
+  .facts { display: grid; gap: 14px; border-left: 1px solid var(--line); padding-left: 28px; }
+  .facts div { font-size: 14px; color: var(--ink-2); }
+  .facts b { display: block; font-size: 15px; color: var(--ink); }
+  .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    border-top: 1px solid var(--line); padding-top: 26px; margin: 8px 0 18px; }
+  .section-title h2 { font-size: 20px; font-weight: 650; }
+  .section-title span { color: var(--ink-3); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px; }
+  .sol {
+    display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .sol:hover { border-color: var(--accent-2); box-shadow: 0 6px 20px rgba(16, 24, 40, .07); }
+  .sol .top { display: flex; align-items: center; justify-content: space-between; }
+  .sol .ic { width: 40px; height: 40px; border-radius: 8px; background: var(--accent-soft); color: var(--accent);
+    display: grid; place-items: center; }
+  .sol .ic svg { width: 21px; height: 21px; }
+  .sol .n { font-size: 12px; color: var(--ink-3); font-weight: 600; letter-spacing: .06em; }
+  .sol h3 { font-size: 17px; font-weight: 650; margin-top: 4px; }
+  .sol p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .sol .for { color: var(--ink-3); font-size: 13px; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--line); }
+  .sol .go { color: var(--accent-2); font-weight: 600; font-size: 14px; }
+  .how { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 8px;
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); overflow: hidden; }
+  .how div { padding: 20px 22px; border-right: 1px solid var(--line); }
+  .how div:last-child { border-right: 0; }
+  .how .k { font-size: 12px; color: var(--ink-3); font-weight: 600; letter-spacing: .06em; }
+  .how b { display: block; margin: 6px 0 4px; font-size: 15px; }
+  .how span { color: var(--ink-2); font-size: 14px; }
+  .contact { margin-top: 40px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    background: var(--accent); color: var(--accent-ink); border-radius: var(--radius); padding: 28px 30px; }
+  .contact h2 { font-size: 22px; font-weight: 650; }
+  .contact p { margin: 4px 0 0; opacity: .85; }
+  .contact .btn { background: var(--accent-ink); color: var(--accent); }
+  .contact .btn.ghost-inv { background: transparent; color: var(--accent-ink); border-color: currentColor; }
+  .note { margin-top: 26px; color: var(--ink-3); font-size: 13px; }
+  @media (max-width: 900px) {
+    .intro { grid-template-columns: 1fr; gap: 28px; padding-top: 36px; }
+    .facts { border-left: 0; padding-left: 0; border-top: 1px solid var(--line); padding-top: 20px; }
+    .how { grid-template-columns: 1fr 1fr; }
+    .how div:nth-child(2) { border-right: 0; }
+    .how div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  }
+  @media (max-width: 600px) {
+    .intro h1 { font-size: 32px; }
+    .grid { grid-template-columns: 1fr; }
+    .how { grid-template-columns: 1fr; }
+    .how div { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><svg class="brand-logo" viewBox="-6 -6 341 80" role="img" aria-label="MAZ Soluciones Inteligentes"><g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"><path class="lg-ink" d="M0 60 V0 L20 34 L40 0 V60 M52 60 L72 0 L92 60 M59.5 40 H84.5"/><path class="lg-acc" d="M104 0 H144 L104 60 H150"/></g><path class="lg-acc-f" d="M148 49 L163 60 L148 71 Z"/><line class="lg-div" x1="180" y1="-2" x2="180" y2="62" stroke-width="1.5"/><text class="lg-txt" x="198" y="25" font-size="21" font-weight="650">Soluciones</text><text class="lg-txt" x="198" y="53" font-size="21" font-weight="650">Inteligentes</text></svg></a>
+  <span class="spacer"></span>
+  <a class="btn ghost small" href="#soluciones">Ver soluciones</a>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <div>
+      <div class="kicker">Automatización con inteligencia artificial para pymes</div>
+      <h1>Menos tareas repetitivas.<br>Más tiempo para tu negocio.</h1>
+      <p>Presupuestos, pedidos, extractos bancarios, gastos y controles que hoy alguien hace a mano todos los días,
+        resueltos con la ayuda de inteligencia artificial, sobre las herramientas que ya usás: mail, planillas y WhatsApp.</p>
+    </div>
+    <div class="facts">
+      <div><b>Sin sistemas nuevos</b>Funciona sobre tu correo, tus planillas y tus cuentas actuales.</div>
+      <div><b>Prueba antes de pagar</b>Te mostramos el resultado con tus propios datos.</div>
+      <div><b>IA con supervisión</b>La inteligencia artificial hace el trabajo pesado; lo dudoso siempre pasa por una persona.</div>
+    </div>
+  </section>
+
+  <div class="section-title" id="soluciones"><h2>Soluciones</h2><span>Cada una tiene una demostración interactiva</span></div>
+
+  <div class="grid">
+    <a class="sol" href="1-presupuestos-por-mail.html">
+      <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="n">01</span></div>
+      <h3>Presupuestos automáticos por mail</h3>
+      <p>La IA entiende el pedido aunque esté escrito a la criolla, arma el presupuesto con tu lista de precios y lo deja listo para enviar.</p>
+      <div class="for">Ferreterías · Corralones · Distribuidoras</div>
+      <span class="go">Ver demostración →</span>
+    </a>
+    <a class="sol" href="2-pedido-aprobado.html">
+      <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg></span><span class="n">02</span></div>
+      <h3>Del “sí” del cliente al pedido cargado</h3>
+      <p>Cuando el cliente aprueba, el pedido se carga con sus cambios y la fecha de entrega. Si pregunta algo, te avisa.</p>
+      <div class="for">Mayoristas · Proveedores gastronómicos</div>
+      <span class="go">Ver demostración →</span>
+    </a>
+    <a class="sol" href="3-movimientos-bancarios.html">
+      <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18"/><path d="m12 3 9 5H3l9-5Z"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 21h18"/></svg></span><span class="n">03</span></div>
+      <h3>Movimientos bancarios ordenados</h3>
+      <p>Del extracto del banco a una planilla clasificada por categoría, con resumen del mes. Aprende de cada corrección.</p>
+      <div class="for">Estudios contables · Administraciones</div>
+      <span class="go">Ver demostración →</span>
+    </a>
+    <a class="sol" href="4-auditoria-suscripciones.html">
+      <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/><path d="M11 8.5v5M8.5 11h5"/></svg></span><span class="n">04</span></div>
+      <h3>Auditoría de gastos y suscripciones</h3>
+      <p>La IA detecta lo que se cobra todos los meses, los servicios duplicados y los aumentos, y calcula cuánto podés ahorrar.</p>
+      <div class="for">Estudios · Oficinas · Cualquier pyme</div>
+      <span class="go">Ver demostración →</span>
+    </a>
+    <a class="sol" href="5-vigilar-web.html">
+      <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span><span class="n">05</span></div>
+      <h3>Monitoreo de páginas y alertas</h3>
+      <p>Controla por vos la lista del mayorista o tus expedientes, y te avisa al celular solo cuando hay algo importante.</p>
+      <div class="for">Comercios · Estudios jurídicos · Licitaciones</div>
+      <span class="go">Ver demostración →</span>
+    </a>
+  </div>
+
+  <div class="section-title" style="margin-top:44px"><h2>Cómo trabajamos</h2><span>De la primera charla a la solución funcionando</span></div>
+  <section class="how">
+    <div><span class="k">PASO 1</span><b>Diagnóstico</b><span>Una charla de 20 minutos para entender qué tarea te consume más tiempo.</span></div>
+    <div><span class="k">PASO 2</span><b>Prueba con tus datos</b><span>Ves el resultado funcionando antes de tomar cualquier decisión.</span></div>
+    <div><span class="k">PASO 3</span><b>Implementación</b><span>Queda instalado sobre tus herramientas, sin cambiar tu forma de trabajar.</span></div>
+    <div><span class="k">PASO 4</span><b>Seguimiento</b><span>Mantenimiento, ajustes y soporte mensual para que siga funcionando.</span></div>
+  </section>
+
+  <section class="contact">
+    <div><h2>¿Qué tarea te gustaría dejar de hacer a mano?</h2><p>Contanos y te mostramos cómo quedaría en tu negocio.</p></div>
+    <div class="row">
+      <a class="btn wa" href="https://wa.me/5491150196418?text=Hola%2C%20vi%20la%20p%C3%A1gina%20de%20MAZ%20Soluciones%20Inteligentes%20y%20quer%C3%ADa%20consultar%20por" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-4.5A8.5 8.5 0 1 1 7.5 19.35Z"/></svg>Escribinos por WhatsApp</a>
+      <a class="btn ghost-inv" href="mailto:mazsolucionesinteligentes@gmail.com?subject=Consulta%20-%20MAZ%20Soluciones%20Inteligentes">Enviar un mail</a>
+    </div>
+  </section>
+
+  <p class="note">Las demostraciones usan datos ficticios y funcionan sin conexión a internet.</p>
+</main>
+</body>
+</html>

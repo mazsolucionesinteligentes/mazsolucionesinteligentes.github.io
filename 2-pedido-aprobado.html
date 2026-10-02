@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Del sí al pedido cargado · MAZ Soluciones Inteligentes</title>
+<link rel="icon" type="image/svg+xml" href="marca/maz-icono.svg">
+<meta property="og:image" content="https://mazsolucionesinteligentes.github.io/marca/maz-vista-previa.png">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .thread { display: grid; gap: 10px; }
+  .bubble { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; background: var(--panel); }
+  .bubble.ours { background: var(--panel-2); }
+  .bubble .who { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+  .bubble .who b { color: var(--ink); }
+  .bubble table td, .bubble table th { padding: 5px 8px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .preset { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+  .preset:hover { border-color: var(--accent); color: var(--accent); }
+  .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 600px) { .board { grid-template-columns: 1fr; } }
+  .col { background: var(--panel-2); border-radius: 12px; padding: 10px; min-height: 140px; }
+  .col h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); margin: 2px 4px 10px; display: flex; justify-content: space-between; }
+  .order { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; }
+  .order .n { font-weight: 700; }
+  .order .c { color: var(--ink-2); }
+  .order .i { color: var(--ink-3); font-size: 12px; margin-top: 4px; }
+  .order.new { border-color: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); animation: pop .5s ease both; }
+  @keyframes pop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+  .diff-add { color: var(--ok); font-weight: 600; }
+  .diff-del { color: var(--bad); text-decoration: line-through; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><svg class="brand-logo" viewBox="-6 -6 341 80" role="img" aria-label="MAZ Soluciones Inteligentes"><g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"><path class="lg-ink" d="M0 60 V0 L20 34 L40 0 V60 M52 60 L72 0 L92 60 M59.5 40 H84.5"/><path class="lg-acc" d="M104 0 H144 L104 60 H150"/></g><path class="lg-acc-f" d="M148 49 L163 60 L148 71 Z"/><line class="lg-div" x1="180" y1="-2" x2="180" y2="62" stroke-width="1.5"/><text class="lg-txt" x="198" y="25" font-size="21" font-weight="650">Soluciones</text><text class="lg-txt" x="198" y="53" font-size="21" font-weight="650">Inteligentes</text></svg></a>
+  <span class="crumb">/ Demo 2 · Del “sí” al pedido cargado</span>
+  <span class="spacer"></span>
+  <span class="pill accent">Carnes La Pampa · mayorista (ejemplo)</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Demo 2 de 5</div>
+    <h1>El cliente dice “dale” y el pedido ya está cargado</h1>
+    <p>La IA lee la respuesta al presupuesto y decide: si aprueba, carga el pedido con los cambios que haya pedido y la fecha de entrega;
+      si pregunta algo o no queda claro, <b>no toca nada</b> y le avisa a una persona.</p>
+    <ol class="steps">
+      <li><b>1</b>Se mandó el presupuesto</li>
+      <li><b>2</b>El cliente responde</li>
+      <li><b>3</b>La IA interpreta si aprobó y qué cambió</li>
+      <li><b>4</b>El pedido aparece en el tablero para preparar</li>
+    </ol>
+  </section>
+
+  <div class="split">
+    <section class="card">
+      <div class="card-head"><h2>Conversación con el cliente</h2><span class="sub">Parrilla El Fogón</span></div>
+      <div class="card-body">
+        <div class="thread" id="thread"></div>
+        <div class="side-label" style="margin-top:16px">Elegí cómo responde el cliente, o escribí otra respuesta</div>
+        <div class="presets" id="presets"></div>
+        <textarea id="respuesta" rows="3" placeholder="Ej: Dale, confirmo. Sacame la morcilla y mandalo el sábado a la mañana."></textarea>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="enviar">Simular respuesta del cliente</button>
+          <span class="muted small">Hoy es jueves 1 de octubre (fecha de la demo).</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Lo que hace la automatización</h2><span class="spacer"></span><span class="pill" id="estado">Esperando respuesta</span></div>
+      <div class="card-body stack">
+        <ul class="progress" id="progreso"></ul>
+        <div id="resultado"></div>
+        <div>
+          <div class="side-label">Tablero de pedidos para preparar</div>
+          <div class="board" id="board"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <div>Ningún pedido aprobado queda perdido en el mail, y <b>nada se carga si no está claro</b>: las dudas siempre pasan por una persona.</div>
+    <span class="spacer"></span>
+    <a class="btn ghost small" href="1-presupuestos-por-mail.html">← Anterior</a>
+    <a class="btn ghost small" href="3-movimientos-bancarios.html">Siguiente demo →</a>
+  </div>
+</main>
+
+<script src="comun.js"></script>
+<script>
+const PRODUCTOS = [
+  { id: "vacio", nombre: "Vacío", kg: 15, precio: 14500, re: /vacio/ },
+  { id: "asado", nombre: "Asado de tira", kg: 20, precio: 12900, re: /asado/ },
+  { id: "matambre", nombre: "Matambre", kg: 8, precio: 13800, re: /matambre/ },
+  { id: "chorizo", nombre: "Chorizo parrillero", kg: 10, precio: 7900, re: /chorizo(?! de bife)/ },
+  { id: "morcilla", nombre: "Morcilla", kg: 5, precio: 6500, re: /morcilla/ },
+];
+const PRESETS = [
+  "Dale, perfecto. Confirmado para el jueves a la mañana.",
+  "Confirmo, pero sacame el matambre y agregá 5 kg más de chorizo. Para mañana.",
+  "¿Me podés hacer mejor precio si llevo 30 kg de vacío?",
+  "Esta semana no, gracias. Te escribo la que viene.",
+];
+
+let nroPedido = 1043;
+const pedidos = [
+  { nro: 1041, cliente: "Bodegón Lo de Tito", fecha: new Date(2026, 9, 1), franja: "mañana", resumen: "Asado 25 kg · Vacío 10 kg" },
+  { nro: 1042, cliente: "Resto Las Brasas", fecha: new Date(2026, 9, 2), franja: "tarde", resumen: "Entraña 6 kg · Chorizo 12 kg" },
+];
+
+const totalDe = items => items.reduce((a, i) => a + i.kg * i.precio, 0);
+
+function pintarHilo() {
+  $("#thread").innerHTML = `
+    <div class="bubble ours">
+      <div class="who"><b>Carnes La Pampa</b> · ayer 17:40</div>
+      Hola Sergio, te paso el presupuesto para la semana:
+      <table style="margin-top:8px">
+        <thead><tr><th>Corte</th><th class="num">Kg</th><th class="num">$/kg</th><th class="num">Subtotal</th></tr></thead>
+        <tbody>${PRODUCTOS.map(p => `<tr><td>${p.nombre}</td><td class="num">${p.kg}</td><td class="num">${fmtARS(p.precio)}</td><td class="num">${fmtARS(p.kg * p.precio)}</td></tr>`).join("")}
+        <tr class="total"><td colspan="3">Total</td><td class="num">${fmtARS(totalDe(PRODUCTOS))}</td></tr></tbody>
+      </table>
+    </div>`;
+}
+
+function pintarTablero(nuevo) {
+  const manana = new Date(HOY); manana.setDate(HOY.getDate() + 1);
+  const mismoDia = (a, b) => a.toDateString() === b.toDateString();
+  const cols = [
+    ["Hoy", p => mismoDia(p.fecha, HOY)],
+    ["Mañana", p => mismoDia(p.fecha, manana)],
+    ["Próximos días", p => p.fecha > manana],
+  ];
+  $("#board").innerHTML = cols.map(([t, f]) => {
+    const ps = pedidos.filter(f).sort((a, b) => a.fecha - b.fecha);
+    return `<div class="col"><h3>${t}<span>${ps.length}</span></h3>${ps.map(p => `
+      <div class="order ${p.nro === nuevo ? "new" : ""}">
+        <div class="n">#${p.nro} · ${esc(p.cliente)}</div>
+        <div class="c">${fmtFecha(p.fecha)} · ${p.franja}</div>
+        <div class="i">${esc(p.resumen)}</div>
+      </div>`).join("")}</div>`;
+  }).join("");
+}
+
+// ---------- "entender" la respuesta ----------
+function proximoDia(nombre) {
+  const i = DIAS.indexOf(nombre);
+  const d = new Date(HOY);
+  let delta = (i - HOY.getDay() + 7) % 7;
+  if (delta === 0) delta = 7;           // "el jueves" dicho un jueves = el de la semana que viene
+  d.setDate(HOY.getDate() + delta);
+  return d;
+}
+function leerFecha(t) {
+  t = t.replace(/\b(a|por|de) la (manana|tarde)\b/g, " ");   // "a la mañana" es franja, no fecha
+  if (/pasado manana/.test(t)) { const d = new Date(HOY); d.setDate(d.getDate() + 2); return d; }
+  if (/\bmanana\b/.test(t)) { const d = new Date(HOY); d.setDate(d.getDate() + 1); return d; }
+  if (/\bhoy\b/.test(t)) return new Date(HOY);
+  const dia = DIAS.find(d => new RegExp("\\b" + d + "\\b").test(t));
+  if (dia) return proximoDia(dia);
+  const m = t.match(/\bel (\d{1,2})\b/);
+  if (m) { const d = new Date(HOY); d.setDate(+m[1]); if (d < HOY) d.setMonth(d.getMonth() + 1); return d; }
+  return null;
+}
+function interpretar(texto) {
+  const t = norm(texto);
+  const aprueba = /\b(dale|confirm\w*|perfecto|de acuerdo|ok|adelante|mandal\w*|aprobad\w*|va bien|me sirve|cerramos)\b/.test(t)
+    || /(^|[.!] )si\b/.test(t);                               // "Sí, ..." al principio de una frase
+  const rechaza = /\b(no gracias|esta semana no|no vamos|lo dejamos|cancel\w*|no me sirve|por ahora no)\b/.test(t) || /^no\b/.test(t);
+  const pregunta = t.includes("?") || /\b(podes|podrias|me haces|cuanto)\b/.test(t);
+
+  if (rechaza && !/confirm/.test(t)) return { tipo: "rechazo" };
+  if (pregunta) return { tipo: "consulta" };                   // ante la duda, que responda una persona
+  if (!aprueba) return { tipo: "duda" };
+
+  // Cambios sobre el presupuesto
+  const items = PRODUCTOS.map(p => ({ ...p, orig: p.kg }));
+  const cambios = [];
+  for (const p of items) {
+    if (new RegExp("(saca\\w*|sin|quita\\w*|no (va|mandes|quiero))( el| la| los| las)? " + p.re.source).test(t)) {
+      p.kg = 0; cambios.push({ p, tipo: "quita" });
+      continue;
+    }
+    const mas = t.match(new RegExp("(\\d+) ?kg (mas )?de " + p.re.source + "|" + "(agrega\\w*|suma\\w*) (\\d+) ?kg (mas )?de " + p.re.source));
+    if (mas && /mas|agrega|suma/.test(mas[0])) {
+      const n = +(mas[1] || mas[4]); p.kg += n; cambios.push({ p, tipo: "suma", n });
+      continue;
+    }
+    const fijo = t.match(new RegExp("(\\d+) ?kg de " + p.re.source));
+    if (fijo) { p.kg = +fijo[1]; cambios.push({ p, tipo: "fija" }); }
+  }
+  const fecha = leerFecha(t);
+  const franja = /tarde/.test(t) ? "tarde" : "mañana";
+  return { tipo: "aprobado", items: items.filter(i => i.kg > 0), todos: items, cambios, fecha, franja };
+}
+
+// ---------- flujo ----------
+$("#presets").innerHTML = PRESETS.map((p, i) => `<button class="preset" data-i="${i}">${esc(p)}</button>`).join("");
+$("#presets").addEventListener("click", e => {
+  const b = e.target.closest(".preset"); if (!b) return;
+  $("#respuesta").value = PRESETS[+b.dataset.i];
+});
+
+$("#enviar").addEventListener("click", async () => {
+  const texto = $("#respuesta").value.trim();
+  if (!texto) { $("#respuesta").value = PRESETS[0]; }
+  const msg = $("#respuesta").value.trim();
+  const btn = $("#enviar"); btn.disabled = true;
+  pintarHilo();
+  $("#thread").insertAdjacentHTML("beforeend", `<div class="bubble fade-in"><div class="who"><b>Sergio · Parrilla El Fogón</b> · ahora</div>${esc(msg)}</div>`);
+  $("#estado").className = "pill accent"; $("#estado").textContent = "Procesando…";
+  $("#resultado").innerHTML = "";
+  await correrPasos($("#progreso"), [
+    "Leyendo la respuesta del cliente",
+    "¿Aprueba, pregunta o rechaza?",
+    "Aplicando cambios al presupuesto",
+    "Interpretando la fecha de entrega",
+  ], 480);
+  const r = interpretar(msg);
+  resultado(r);
+  btn.disabled = false;
+});
+
+function resultado(r) {
+  const R = $("#resultado");
+  if (r.tipo === "consulta" || r.tipo === "duda") {
+    $("#estado").className = "pill warn"; $("#estado").textContent = "Necesita una persona";
+    R.innerHTML = `<div class="notice warn fade-in"><div>
+      <div class="t">${r.tipo === "consulta" ? "El cliente hizo una consulta" : "La respuesta no es clara"}: no cargué ningún pedido</div>
+      <div class="d">Te avisé por WhatsApp para que respondas vos. Cuando el cliente confirme, el pedido se carga solo.</div></div></div>`;
+    pintarTablero(); return;
+  }
+  if (r.tipo === "rechazo") {
+    $("#estado").className = "pill bad"; $("#estado").textContent = "No aprobó";
+    R.innerHTML = `<div class="notice bad fade-in"><div>
+      <div class="t">El cliente no aprobó esta vez</div>
+      <div class="d">Marqué el presupuesto como “no concretado” y te recuerdo el jueves que viene para volver a ofrecerle.</div></div></div>`;
+    pintarTablero(); return;
+  }
+  const nro = nroPedido++;
+  let fecha = r.fecha, avisoFecha = "";
+  if (!fecha) { fecha = new Date(HOY); fecha.setDate(HOY.getDate() + 1); avisoFecha = "No dijo fecha: lo puse para mañana y lo marqué para confirmar."; }
+  const total = totalDe(r.items);
+  pedidos.push({ nro, cliente: "Parrilla El Fogón", fecha, franja: r.franja, resumen: r.items.map(i => `${i.nombre} ${i.kg} kg`).join(" · ") });
+
+  const filas = r.todos.map(i => {
+    const kgTxt = i.kg === i.orig ? i.kg : i.kg === 0 ? `<span class="diff-del">${i.orig}</span>` : `<span class="diff-del">${i.orig}</span> <span class="diff-add">${i.kg}</span>`;
+    return `<tr${i.kg === 0 ? ' style="opacity:.55"' : ""}><td>${i.nombre}</td><td class="num">${kgTxt}</td><td class="num">${i.kg ? fmtARS(i.kg * i.precio) : "—"}</td></tr>`;
+  }).join("");
+
+  $("#estado").className = "pill ok"; $("#estado").textContent = `Pedido #${nro} cargado`;
+  R.innerHTML = `<div class="stack fade-in">
+    <div class="notice ok"><div>
+      <div class="t">Aprobado → pedido #${nro} cargado para el ${fmtFecha(fecha)} (${r.franja})</div>
+      <div class="d">${r.cambios.length ? `Apliqué ${r.cambios.length} cambio${r.cambios.length > 1 ? "s" : ""} que pidió el cliente.` : "Sin cambios respecto del presupuesto."} ${avisoFecha}</div></div></div>
+    <table><thead><tr><th>Corte</th><th class="num">Kg</th><th class="num">Subtotal</th></tr></thead>
+      <tbody>${filas}<tr class="total"><td colspan="2">Total del pedido</td><td class="num">${fmtARS(total)}</td></tr></tbody></table>
+    <div class="notice"><div><div class="t">Avisos enviados</div>
+      <div class="d">Al cliente: “Recibimos tu pedido #${nro}, sale el ${fmtFecha(fecha)} por la ${r.franja}”. A la cámara: hoja de preparación lista.</div></div></div>
+  </div>`;
+  pintarTablero(nro);
+}
+
+pintarHilo();
+pintarTablero();
+</script>
+</body>
+</html>

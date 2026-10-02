@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 345 86" width="345" height="86">
+  <title>MAZ Soluciones Inteligentes</title>
+  <g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M0 60 V0 L20 34 L40 0 V60" stroke="#1e3a5f"/>
+    <path d="M52 60 L72 0 L92 60 M59.5 40 H84.5" stroke="#1e3a5f"/>
+    <path d="M104 0 H144 L104 60 H150" stroke="#4f8fd6"/>
+  </g>
+  <path d="M148 49 L163 60 L148 71 Z" fill="#4f8fd6"/>
+  <line x1="180" y1="-2" x2="180" y2="62" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="198" y="25" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="650" fill="#1e3a5f">Soluciones</text>
+  <text x="198" y="53" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="650" fill="#1e3a5f">Inteligentes</text>
+</svg>

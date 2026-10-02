@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presupuestos por mail · MAZ Soluciones Inteligentes</title>
+<link rel="icon" type="image/svg+xml" href="marca/maz-icono.svg">
+<meta property="og:image" content="https://mazsolucionesinteligentes.github.io/marca/maz-vista-previa.png">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .draft { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .draft-head { background: var(--panel-2); padding: 10px 14px; font-size: 13px; color: var(--ink-2); display: grid; gap: 2px; }
+  .draft-head b { color: var(--ink); }
+  .draft-body { padding: 14px; font-size: 14px; }
+  .draft-body p { margin: 0 0 10px; }
+  .tag-conf { font-size: 11px; font-weight: 700; color: var(--warn); }
+  .catalog-toggle { font-size: 13px; }
+  details summary { cursor: pointer; color: var(--ink-2); font-size: 13px; }
+  .cat-grid { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; font-size: 13px; margin-top: 8px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><svg class="brand-logo" viewBox="-6 -6 341 80" role="img" aria-label="MAZ Soluciones Inteligentes"><g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"><path class="lg-ink" d="M0 60 V0 L20 34 L40 0 V60 M52 60 L72 0 L92 60 M59.5 40 H84.5"/><path class="lg-acc" d="M104 0 H144 L104 60 H150"/></g><path class="lg-acc-f" d="M148 49 L163 60 L148 71 Z"/><line class="lg-div" x1="180" y1="-2" x2="180" y2="62" stroke-width="1.5"/><text class="lg-txt" x="198" y="25" font-size="21" font-weight="650">Soluciones</text><text class="lg-txt" x="198" y="53" font-size="21" font-weight="650">Inteligentes</text></svg></a>
+  <span class="crumb">/ Demo 1 · Presupuestos por mail</span>
+  <span class="spacer"></span>
+  <span class="pill accent">Ferretería San Martín (ejemplo)</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Demo 1 de 5</div>
+    <h1>El cliente pide por mail, el presupuesto se arma solo</h1>
+    <p>La IA lee cada pedido, reconoce los productos aunque estén escritos a la criolla,
+      los cruza con la lista de precios y deja la respuesta lista para enviar. Lo que no encuentra lo marca para revisar.</p>
+    <ol class="steps">
+      <li><b>1</b>Llega el mail</li>
+      <li><b>2</b>La IA interpreta qué piden</li>
+      <li><b>3</b>Se cruza con la lista de precios</li>
+      <li><b>4</b>Queda el borrador listo y avisa al mostrador</li>
+    </ol>
+  </section>
+
+  <div class="split">
+    <!-- ANTES: la bandeja -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Bandeja de entrada</h2><span class="sub">ventas@ferreteriasanmartin.com.ar</span>
+      </div>
+      <div class="inbox" id="inbox"></div>
+      <div class="card-body mail-view">
+        <div class="meta" id="meta"></div>
+        <textarea id="cuerpo" rows="8" aria-label="Texto del mail"></textarea>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="procesar">Procesar con IA</button>
+          <button class="btn ghost small" id="nuevo">Escribir un pedido propio</button>
+        </div>
+        <details style="margin-top:14px">
+          <summary>Ver la lista de precios que usa la demo</summary>
+          <div class="cat-grid" id="catalogo"></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- DESPUÉS: el resultado -->
+    <section class="card">
+      <div class="card-head"><h2>Lo que hace la automatización</h2><span class="spacer"></span><span class="pill" id="estado">Esperando</span></div>
+      <div class="card-body">
+        <ul class="progress" id="progreso"></ul>
+        <div id="resultado">
+          <div class="empty"><div class="big"></div>Elegí un mail y tocá <b>Procesar con IA</b>.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <div>A mano, armar un presupuesto así lleva <b>10 a 20 minutos</b>. Acá tarda <b>segundos</b>, y nadie se olvida de responder.</div>
+    <span class="spacer"></span>
+    <a class="btn ghost small" href="2-pedido-aprobado.html">Siguiente demo →</a>
+  </div>
+</main>
+
+<script src="comun.js"></script>
+<script>
+// Lista de precios de ejemplo (precios finales con IVA). kw = cómo lo escribe la gente.
+const CATALOGO = [
+  { id: "codo110", nombre: "Codo PVC 110 mm a 90°", precio: 3100, kw: ["codos? de 110", "codos? 110", "codos?"] },
+  { id: "cano110", nombre: "Caño PVC 110 mm x 4 m", precio: 18500, kw: ["canos? de 110", "canos? 110", "canos? de 4 pulgadas"] },
+  { id: "cano40", nombre: "Caño PVC 40 mm x 4 m", precio: 6900, kw: ["canos? de 40", "canos? 40"] },
+  { id: "pega", nombre: "Pegamento para PVC 125 cc", precio: 4500, kw: ["pegamentos?", "adhesivo pvc"] },
+  { id: "teflon", nombre: "Cinta de teflón", precio: 900, kw: ["teflon(es)?", "cintas? de teflon"] },
+  { id: "cemento", nombre: "Cemento Loma Negra 50 kg", precio: 13900, kw: ["cemento"] },
+  { id: "cal", nombre: "Cal hidratada 25 kg", precio: 7200, kw: ["cal"] },
+  { id: "arena", nombre: "Arena (bolsón 1 m³)", precio: 48000, kw: ["arena"] },
+  { id: "lhueco", nombre: "Ladrillo hueco 12x18x33", precio: 690, kw: ["ladrillos? huecos?", "huecos?"] },
+  { id: "lcomun", nombre: "Ladrillo común", precio: 260, kw: ["ladrillos? comun(es)?", "ladrillos?"] },
+  { id: "hierro8", nombre: "Hierro aletado 8 mm x 12 m", precio: 9800, kw: ["hierros? del 8", "hierros? de 8", "hierros? 8", "hierros? del ocho"] },
+  { id: "hierro10", nombre: "Hierro aletado 10 mm x 12 m", precio: 15300, kw: ["hierros? del 10", "hierros? de 10", "hierros? 10"] },
+  { id: "latex", nombre: "Látex interior 20 L", precio: 89000, kw: ["latex", "pintura"] },
+  { id: "rodillo", nombre: "Rodillo lana 22 cm", precio: 7800, kw: ["rodillos?"] },
+  { id: "lija", nombre: "Lija al agua", precio: 600, kw: ["lijas?"] },
+  { id: "silicona", nombre: "Silicona transparente 280 ml", precio: 5300, kw: ["siliconas?"] },
+  { id: "membrana", nombre: "Membrana líquida 20 kg", precio: 76000, kw: ["membranas?"] },
+  { id: "cable", nombre: "Cable unipolar 2,5 mm (por metro)", precio: 680, kw: ["cables?"] },
+  { id: "termica", nombre: "Llave térmica 2x20 A", precio: 12400, kw: ["termicas?", "llaves? termicas?"] },
+  { id: "tornillos", nombre: "Tornillos autoperforantes x100", precio: 8400, kw: ["tornillos?"] },
+  { id: "tarugos", nombre: "Tarugos 8 mm x100", precio: 3900, kw: ["tarugos?"] },
+  { id: "clavos", nombre: "Clavos 2\" (kg)", precio: 4600, kw: ["clavos?"] },
+  { id: "guantes", nombre: "Guantes de trabajo", precio: 3200, kw: ["guantes?"] },
+].map(p => ({ ...p, re: new RegExp("\\b(" + p.kw.join("|") + ")\\b") }));
+
+const ZONAS = { "villa ballester": 9000, "san martin": 6000, "san andres": 7000, "villa maipu": 7000, "caseros": 11000, "jose leon suarez": 12000 };
+const DESCUENTO_DESDE = 400000;
+
+const MAILS = [
+  { de: "Marcos Giménez", nombre: "Marcos", mail: "marcos.gimenez.obras@gmail.com", asunto: "Presupuesto materiales obra", hora: "08:12",
+    texto: "Hola, buen día.\nNecesito presupuesto para una obra: 20 bolsas de cemento, 10 bolsas de cal, 2 bolsones de arena, 300 ladrillos huecos y 6 hierros del 8.\n¿Me lo pueden enviar a Villa Ballester? Gracias!\nMarcos" },
+  { de: "Laura Benítez", nombre: "Laura", mail: "laubenitez@hotmail.com", asunto: "Consulta pintura", hora: "09:47",
+    texto: "Hola! Quería saber cuánto me sale pintar mi living: 2 latas de látex de 20 litros, un rodillo y lija.\nTambién una silicona.\nPaso a retirar. Saludos, Laura" },
+  { de: "Plomería Ríos", nombre: "Damián", mail: "plomeriarios@gmail.com", asunto: "Pedido baño", hora: "10:05",
+    texto: "Buenas, para un baño: 3 caños de 110, 4 codos de 110, 5 caños de 40, un pegamento y 2 teflones.\nY un sifón cromado si tienen.\nEnvío a San Martín centro.\nGracias, Damián" },
+];
+
+const NUMS = { un: 1, una: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, doce: 12, quince: 15, veinte: 20, "media docena": 6, docena: 12 };
+const NUM_RE = new RegExp("\\b(\\d+(?:[.,]\\d+)?|media docena|" + Object.keys(NUMS).filter(k => !k.includes(" ")).join("|") + ")\\b", "g");
+const IGNORAR = /presupuesto|obra|saber|gracias|hola|buen|saludos|cuanto|necesito para|para un/;
+
+function cantidadAntes(seg, hasta) {
+  let q = null;
+  for (const m of seg.slice(0, hasta).matchAll(NUM_RE)) {
+    const t = m[1];
+    q = /^\d/.test(t) ? parseFloat(t.replace(",", ".")) : NUMS[t];
+  }
+  return q;
+}
+
+// Recupera cómo estaba escrito (con acentos) un texto que se normalizó.
+function original(texto, n) {
+  const mapa = {};
+  for (const w of texto.split(/[^\p{L}\d]+/u)) if (w) mapa[norm(w)] = w.toLowerCase();
+  const r = n.split(" ").map(w => mapa[w] || w).join(" ");
+  return r.charAt(0).toUpperCase() + r.slice(1);
+}
+const ZONA_NOMBRE = { "villa ballester": "Villa Ballester", "san martin": "San Martín", "san andres": "San Andrés",
+  "villa maipu": "Villa Maipú", "caseros": "Caseros", "jose leon suarez": "José León Suárez" };
+
+// "Entender" el mail: lo parte en pedidos sueltos y reconoce cada producto.
+function interpretar(texto) {
+  const t = norm(texto);
+  const segs = t.split(/[\n,;:]|\. |\by\b(?= ?(?:\d|un |una |dos |tres |cuatro |cinco |seis |lija|rodillo|silicona))|\btambien\b/).map(s => (s || "").trim()).filter(Boolean);
+  const items = [], dudas = [];
+  for (const seg of segs) {
+    const prod = CATALOGO.find(p => p.re.test(seg));
+    if (prod) {
+      const idx = seg.search(prod.re);
+      const q = cantidadAntes(seg, idx) ?? 1;
+      const prev = items.find(i => i.p.id === prod.id);
+      prev ? prev.q += q : items.push({ p: prod, q, txt: seg });
+    } else if (!IGNORAR.test(seg) && NUM_RE.test(seg) && seg.length < 60 && !/envi|retir|entreg|mand/.test(seg)) {
+      NUM_RE.lastIndex = 0;
+      const q = cantidadAntes(seg, seg.length) ?? 1;
+      const nombre = seg.replace(NUM_RE, "").replace(/\bsi tienen\b|\bsi hay\b|^y\b/g, "").replace(/[.!?¿¡]/g, "").replace(/\s+/g, " ").trim();
+      if (nombre) dudas.push({ q, nombre: original(texto, nombre) });
+    }
+    NUM_RE.lastIndex = 0;
+  }
+  // Entrega
+  let entrega = { tipo: "no indicado" };
+  if (/retir|paso a buscar|paso por el local/.test(t)) entrega = { tipo: "retira" };
+  else if (/envi|entreg|mand|llev|traer/.test(t)) {
+    const zona = Object.keys(ZONAS).find(z => t.includes(z));
+    entrega = zona ? { tipo: "envio", zona, costo: ZONAS[zona] } : { tipo: "envio", zona: null };
+  }
+  return { items, dudas, entrega };
+}
+
+// ---------- interfaz ----------
+let sel = 0;
+function pintarBandeja() {
+  $("#inbox").innerHTML = MAILS.map((m, i) => `
+    <button class="mail-item ${i === sel ? "sel" : ""}" data-i="${i}">
+      <span class="avatar">${m.de.split(" ").map(w => w[0]).join("").slice(0, 2)}</span>
+      <span><div class="from">${esc(m.de)}</div><div class="subj">${esc(m.asunto)} — ${esc(m.texto.slice(0, 60))}…</div></span>
+      <span class="when">${m.hora}</span>
+    </button>`).join("");
+  const m = MAILS[sel];
+  $("#meta").innerHTML = m ? `De: <b>${esc(m.de)}</b> &lt;${esc(m.mail)}&gt; · Asunto: <b>${esc(m.asunto)}</b>` : "Escribí un pedido como lo mandaría un cliente:";
+  $("#cuerpo").value = m ? m.texto : "";
+}
+$("#inbox").addEventListener("click", e => {
+  const b = e.target.closest(".mail-item"); if (!b) return;
+  sel = +b.dataset.i; pintarBandeja(); limpiar();
+});
+$("#nuevo").addEventListener("click", () => {
+  sel = -1; pintarBandeja(); limpiar();
+  $("#cuerpo").placeholder = "Ej: Hola, necesito 5 bolsas de cemento, 2 membranas y un rollo de teflón. Envío a Caseros.";
+  $("#cuerpo").focus();
+});
+$("#catalogo").innerHTML = CATALOGO.map(p => `<span>${esc(p.nombre)}</span><span class="num">${fmtARS(p.precio)}</span>`).join("");
+
+function limpiar() {
+  $("#progreso").innerHTML = "";
+  $("#estado").className = "pill"; $("#estado").textContent = "Esperando";
+  $("#resultado").innerHTML = `<div class="empty"><div class="big"></div>Tocá <b>Procesar con IA</b>.</div>`;
+}
+
+$("#procesar").addEventListener("click", async () => {
+  const texto = $("#cuerpo").value.trim();
+  if (!texto) { $("#cuerpo").focus(); return; }
+  const btn = $("#procesar"); btn.disabled = true;
+  $("#estado").className = "pill accent"; $("#estado").textContent = "Procesando…";
+  $("#resultado").innerHTML = "";
+  await correrPasos($("#progreso"), [
+    "Leyendo el mail",
+    "Identificando productos y cantidades",
+    "Buscando precios en la lista",
+    "Calculando envío y descuentos",
+    "Redactando la respuesta",
+  ]);
+  const r = interpretar(texto);
+  mostrar(r);
+  btn.disabled = false;
+});
+
+function mostrar({ items, dudas, entrega }) {
+  const m = MAILS[sel] || { de: "Cliente", mail: "cliente@ejemplo.com", asunto: "Pedido" };
+  const nombre = m.nombre || m.de.split(" ")[0];
+  const sub = items.reduce((a, i) => a + i.q * i.p.precio, 0);
+  const desc = sub >= DESCUENTO_DESDE ? Math.round(sub * 0.05) : 0;
+  const flete = entrega.tipo === "envio" && entrega.costo ? entrega.costo : 0;
+  const total = sub - desc + flete;
+
+  if (!items.length) {
+    $("#estado").className = "pill warn"; $("#estado").textContent = "Revisar";
+    $("#resultado").innerHTML = `<div class="notice warn fade-in"><div><div class="t">No encontré productos de la lista en este mail</div>
+      <div class="d">Lo dejé marcado para que lo responda una persona. Probá con productos como cemento, caños de 110, látex, cable, membrana…</div></div></div>`;
+    return;
+  }
+
+  const filas = items.map(i => `<tr><td>${esc(i.p.nombre)}</td><td class="num">${i.q.toLocaleString("es-AR")}</td><td class="num">${fmtARS(i.p.precio)}</td><td class="num">${fmtARS(i.q * i.p.precio)}</td></tr>`).join("")
+    + dudas.map(d => `<tr class="flag"><td>${esc(d.nombre)} <span class="tag-conf">A CONFIRMAR</span></td><td class="num">${d.q}</td><td class="num">—</td><td class="num">—</td></tr>`).join("");
+  const lineaEntrega = entrega.tipo === "retira" ? "Retira por el local (Av. San Martín 2450)."
+    : entrega.tipo === "envio" && entrega.zona ? `Envío a ${ZONA_NOMBRE[entrega.zona]}: ${fmtARS(flete)}.`
+    : entrega.tipo === "envio" ? "Envío: el costo depende de la zona, ¿nos pasás la dirección?"
+    : "¿Lo pasás a retirar o te lo enviamos?";
+
+  $("#estado").className = dudas.length ? "pill warn" : "pill ok";
+  $("#estado").textContent = dudas.length ? "Listo · 1 cosa a revisar" : "Listo para enviar";
+
+  $("#resultado").innerHTML = `
+  <div class="stack fade-in">
+    <div class="draft">
+      <div class="draft-head">
+        <div>Para: <b>${esc(m.mail)}</b></div>
+        <div>Asunto: <b>Re: ${esc(m.asunto)}</b></div>
+      </div>
+      <div class="draft-body">
+        <p>Hola ${esc(nombre)}, ¿cómo estás? Te paso el presupuesto:</p>
+        <table>
+          <thead><tr><th>Producto</th><th class="num">Cant.</th><th class="num">Precio</th><th class="num">Subtotal</th></tr></thead>
+          <tbody>${filas}
+            <tr><td colspan="3">Subtotal</td><td class="num">${fmtARS(sub)}</td></tr>
+            ${desc ? `<tr><td colspan="3">Descuento 5% pago contado o transferencia</td><td class="num">− ${fmtARS(desc)}</td></tr>` : ""}
+            ${flete ? `<tr><td colspan="3">Envío</td><td class="num">${fmtARS(flete)}</td></tr>` : ""}
+            <tr class="total"><td colspan="3">Total</td><td class="num">${fmtARS(total)}</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px">${esc(lineaEntrega)}${dudas.length ? ` Lo marcado como <i>a confirmar</i> lo chequeamos en el depósito y te avisamos.` : ""}</p>
+        <p>Precios válidos por 48 horas. ¡Cualquier cosa me escribís!<br>Ferretería San Martín</p>
+      </div>
+    </div>
+    <div class="notice ok"><div><div class="t">Borrador guardado en Gmail</div><div class="d">Queda en la conversación con ${esc(m.de)}. Se revisa y se envía con un clic.</div></div></div>
+    <div class="notice"><div><div class="t">Aviso al mostrador por WhatsApp</div><div class="d">“Nuevo presupuesto para ${esc(m.de)}: ${fmtARS(total)}${dudas.length ? ` · revisar: ${dudas.map(d => d.nombre).join(", ")}` : ""}”</div></div></div>
+    ${dudas.length ? `<div class="notice warn"><div><div class="t">No está en la lista: ${dudas.map(d => esc(d.nombre)).join(", ")}</div><div class="d">No lo inventa: lo deja marcado para que alguien confirme precio y stock.</div></div></div>` : ""}
+  </div>`;
+}
+
+pintarBandeja();
+</script>
+</body>
+</html>

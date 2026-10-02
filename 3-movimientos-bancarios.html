@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movimientos bancarios ordenados · MAZ Soluciones Inteligentes</title>
+<link rel="icon" type="image/svg+xml" href="marca/maz-icono.svg">
+<meta property="og:image" content="https://mazsolucionesinteligentes.github.io/marca/maz-vista-previa.png">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .raw { font-family: var(--mono); font-size: 12px; line-height: 1.6; background: var(--panel-2); border-radius: 10px;
+    padding: 10px 12px; max-height: 420px; overflow: auto; white-space: pre; color: var(--ink-2); }
+  .drop { border: 1.5px dashed var(--line); border-radius: 12px; padding: 14px; text-align: center; font-size: 13px; color: var(--ink-3); margin-top: 12px; }
+  .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .bars { display: grid; gap: 8px; }
+  .bar { display: grid; grid-template-columns: 150px 1fr 110px; gap: 10px; align-items: center; font-size: 13px; }
+  .bar .track { height: 12px; background: var(--panel-2); border-radius: 6px; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 6px; background: var(--accent); transition: width .5s ease; }
+  .bar .fill.in { background: var(--ok); }
+  @media (max-width: 600px) { .bar { grid-template-columns: 100px 1fr 90px; } }
+  .tbl-wrap { max-height: 460px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; }
+  .tbl-wrap table { font-size: 13px; }
+  .tbl-wrap th { position: sticky; top: 0; background: var(--panel); }
+  .tbl-wrap select { padding: 4px 6px; font-size: 12px; border-radius: 7px; width: auto; }
+  tr.sin td { background: var(--warn-soft); }
+  .neg { color: var(--bad); }
+  .pos { color: var(--ok); }
+  .learned { font-size: 12px; color: var(--ok); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><svg class="brand-logo" viewBox="-6 -6 341 80" role="img" aria-label="MAZ Soluciones Inteligentes"><g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"><path class="lg-ink" d="M0 60 V0 L20 34 L40 0 V60 M52 60 L72 0 L92 60 M59.5 40 H84.5"/><path class="lg-acc" d="M104 0 H144 L104 60 H150"/></g><path class="lg-acc-f" d="M148 49 L163 60 L148 71 Z"/><line class="lg-div" x1="180" y1="-2" x2="180" y2="62" stroke-width="1.5"/><text class="lg-txt" x="198" y="25" font-size="21" font-weight="650">Soluciones</text><text class="lg-txt" x="198" y="53" font-size="21" font-weight="650">Inteligentes</text></svg></a>
+  <span class="crumb">/ Demo 3 · Movimientos bancarios ordenados</span>
+  <span class="spacer"></span>
+  <span class="pill accent">Estudio Contable Ferreyra (ejemplo)</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Demo 3 de 5</div>
+    <h1>Del extracto del banco a la planilla ordenada, en un clic</h1>
+    <p>La IA clasifica cada movimiento: ventas, proveedores, sueldos, impuestos, servicios… Lo que no reconoce queda marcado.
+      Si lo corregís una vez, <b>aprende</b> y la próxima vez lo clasifica solo. Al final, se descarga la planilla.</p>
+    <ol class="steps">
+      <li><b>1</b>Llega el extracto del cliente</li>
+      <li><b>2</b>Se clasifica cada movimiento</li>
+      <li><b>3</b>Se revisa lo dudoso</li>
+      <li><b>4</b>Planilla y resumen listos</li>
+    </ol>
+  </section>
+
+  <div class="split">
+    <section class="card">
+      <div class="card-head"><h2>Extracto de septiembre</h2><span class="sub">Cliente: Panadería La Espiga</span></div>
+      <div class="card-body">
+        <div class="side-label">Así llega del banco (36 movimientos)</div>
+        <div class="raw" id="raw"></div>
+        <div class="drop" id="drop">¿Tenés un extracto propio en CSV? Arrastralo acá o <label style="color:var(--accent);cursor:pointer;text-decoration:underline">elegí el archivo<input type="file" id="file" accept=".csv,.txt" hidden></label>.<br>
+          <span class="small">Columnas esperadas: fecha, concepto o descripción, importe (o débito y crédito). No sale de tu computadora.</span></div>
+        <div class="row" style="margin-top:14px"><button class="btn" id="procesar">Ordenar con IA</button></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Resultado</h2><span class="spacer"></span><span class="pill" id="estado">Esperando</span></div>
+      <div class="card-body stack">
+        <ul class="progress" id="progreso"></ul>
+        <div id="resumen"><div class="empty"><div class="big"></div>Tocá <b>Ordenar con IA</b>.</div></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" id="detalle" style="margin-top:20px; display:none">
+    <div class="card-head"><h2>Planilla de movimientos</h2><span class="sub" id="detalleSub"></span><span class="spacer"></span>
+      <button class="btn small" id="descargar">Descargar planilla</button></div>
+    <div class="card-body">
+      <div class="tbl-wrap"><table id="tabla"></table></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div>Para un estudio con 30 clientes, esto son <b>días de carga manual por mes</b> que pasan a ser una revisión de 10 minutos por cliente.</div>
+    <span class="spacer"></span>
+    <a class="btn ghost small" href="2-pedido-aprobado.html">← Anterior</a>
+    <a class="btn ghost small" href="4-auditoria-suscripciones.html">Siguiente demo →</a>
+  </div>
+</main>
+
+<script src="comun.js"></script>
+<script>
+const CATS = ["Ventas y cobros", "Proveedores", "Sueldos", "Impuestos", "Servicios", "Alquiler", "Gastos bancarios",
+  "Combustible", "Seguros", "Honorarios", "Tarjeta", "Compras varias", "Ingresos financieros", "Movimientos propios", "Sin categoría"];
+
+// Reglas: si el concepto contiene alguna palabra, va a esa categoría. El orden importa.
+const REGLAS = [
+  [/haberes|sueldo|aguinaldo/, "Sueldos"],
+  [/cuenta propia|entre cuentas/, "Movimientos propios"],
+  [/arca|afip|arba|agip|monotributo|ingresos brutos|ley 25\.?413|vep/, "Impuestos"],
+  [/comision|mantenimiento cuenta|iva s\/comision/, "Gastos bancarios"],
+  [/edenor|edesur|metrogas|naturgy|aysa|telecom|personal|movistar|claro|telecentro/, "Servicios"],
+  [/alquiler|inmobiliaria/, "Alquiler"],
+  [/ypf|shell|axion|puma|estacion/, "Combustible"],
+  [/seguro|la caja|sancor|federacion patronal/, "Seguros"],
+  [/honorarios|contador/, "Honorarios"],
+  [/tarjeta|visa empresa/, "Tarjeta"],
+  [/plazo fijo|interes/, "Ingresos financieros"],
+  [/posnet|liquidacion|mercado pago|deposito efectivo|cobro/, "Ventas y cobros"],
+  [/proveedor|sa\b|srl\b|distribuidora|molinos|serenisima/, "Proveedores"],
+  [/mercadolibre|pago qr|ferreteria/, "Compras varias"],
+];
+
+const EJEMPLO = `Fecha;Concepto;Importe
+01/09/2026;TRANSF RECIBIDA MERCADO PAGO LIQUIDACION;845300,00
+01/09/2026;DEB AUTOMATICO EDENOR;-48230,00
+02/09/2026;PAGO A PROVEEDOR MOLINOS CANUELAS SA;-612000,00
+02/09/2026;DEPOSITO EFECTIVO;320000,00
+03/09/2026;COMISION MANTENIMIENTO CUENTA;-12400,00
+03/09/2026;IVA S/COMISION;-2604,00
+04/09/2026;TRANSF A GOMEZ JUAN CARLOS HABERES;-480000,00
+04/09/2026;TRANSF A PERALTA LUCIA HABERES;-480000,00
+05/09/2026;ARCA VEP AUTONOMOS;-186900,00
+05/09/2026;LIQUIDACION POSNET VISA;410250,00
+06/09/2026;DEB AUTOMATICO METROGAS;-96700,00
+08/09/2026;TRANSF RECIBIDA MERCADO PAGO LIQUIDACION;912440,00
+09/09/2026;PAGO A PROVEEDOR LA SERENISIMA;-235800,00
+10/09/2026;ARBA INGRESOS BRUTOS;-74300,00
+10/09/2026;IMPUESTO LEY 25413 DEBITOS;-21600,00
+11/09/2026;COMPRA DEBITO YPF ESTACION 1543;-38500,00
+12/09/2026;TRANSF A INMOBILIARIA SUR ALQUILER LOCAL;-950000,00
+15/09/2026;LIQUIDACION POSNET MASTERCARD;298600,00
+15/09/2026;PAGO A PROVEEDOR DISTRIBUIDORA EL TRIGO;-401200,00
+16/09/2026;DEB AUTOMATICO TELECOM ARGENTINA;-32900,00
+17/09/2026;TRANSF RECIBIDA MERCADO PAGO LIQUIDACION;1004800,00
+18/09/2026;DEB AUTOMATICO AYSA;-27400,00
+19/09/2026;COMPRA DEBITO MERCADOLIBRE;-86990,00
+20/09/2026;TRANSF A CUENTA PROPIA BBVA;-500000,00
+22/09/2026;DEB AUTOMATICO SEGURO LA CAJA;-41200,00
+23/09/2026;LIQUIDACION POSNET VISA;377900,00
+24/09/2026;TRANSF A FERREYRA M HONORARIOS;-150000,00
+25/09/2026;PAGO A PROVEEDOR MOLINOS CANUELAS SA;-598400,00
+26/09/2026;TRANSF RECIBIDA PEREZ MARTA;45000,00
+28/09/2026;TRANSF RECIBIDA MERCADO PAGO LIQUIDACION;876150,00
+29/09/2026;IMPUESTO LEY 25413 CREDITOS;-28300,00
+29/09/2026;PAGO QR FERRETERIA SAN MARTIN;-23400,00
+30/09/2026;ACREDITACION INTERES PLAZO FIJO;62300,00
+30/09/2026;DEBITO TARJETA VISA EMPRESA;-312000,00
+30/09/2026;TRANSF A RODRIGUEZ PABLO VARIOS;-60000,00
+30/09/2026;TRANSF RECIBIDA GARCIA HNOS;135000,00`;
+
+let fuente = EJEMPLO;
+let movs = [];
+const aprendidas = [];   // reglas que agrega el usuario al corregir
+
+$("#raw").textContent = EJEMPLO;
+
+// ---------- leer CSV (formato argentino o internacional) ----------
+function numero(s) {
+  s = String(s).trim().replace(/[$\s]/g, "");
+  if (!s) return 0;
+  if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, "").replace(",", ".");   // 1.234,56
+  else s = s.replace(/,/g, "");                                          // 1,234.56
+  return parseFloat(s) || 0;
+}
+function parsearCSV(txt) {
+  const lineas = txt.replace(/\r/g, "").split("\n").filter(l => l.trim());
+  const sep = (lineas[0].match(/;/g) || []).length >= (lineas[0].match(/,/g) || []).length ? ";" : ",";
+  const split = l => l.split(sep).map(c => c.replace(/^"|"$/g, "").trim());
+  const head = split(lineas[0]).map(norm);
+  const col = re => head.findIndex(h => re.test(h));
+  const iF = col(/fecha/), iC = col(/concepto|descrip|detalle|movimiento/), iI = col(/importe|monto|saldo mov/),
+        iD = col(/debito|debe|egreso/), iK = col(/credito|haber|ingreso/);
+  if (iF < 0 || iC < 0 || (iI < 0 && iD < 0)) throw new Error("No encontré las columnas de fecha, concepto e importe.");
+  return lineas.slice(1).map(split).filter(c => c[iF]).map(c => ({
+    fecha: c[iF], concepto: c[iC],
+    importe: iI >= 0 ? numero(c[iI]) : numero(c[iK] || 0) - Math.abs(numero(c[iD] || 0)),
+  }));
+}
+
+function clasificar(m) {
+  const t = norm(m.concepto);
+  for (const [re, cat] of aprendidas) if (re.test(t)) return { cat, auto: "aprendida" };
+  for (const [re, cat] of REGLAS) if (re.test(t)) return { cat, auto: "si" };
+  return { cat: "Sin categoría", auto: "no" };
+}
+
+// ---------- carga de archivo propio ----------
+function cargarArchivo(f) {
+  const r = new FileReader();
+  r.onload = () => { fuente = r.result; $("#raw").textContent = fuente.slice(0, 6000); $("#procesar").click(); };
+  r.readAsText(f);
+}
+$("#file").addEventListener("change", e => e.target.files[0] && cargarArchivo(e.target.files[0]));
+const drop = $("#drop");
+["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => e.dataTransfer.files[0] && cargarArchivo(e.dataTransfer.files[0]));
+
+// ---------- proceso ----------
+$("#procesar").addEventListener("click", async () => {
+  const btn = $("#procesar"); btn.disabled = true;
+  $("#estado").className = "pill accent"; $("#estado").textContent = "Procesando…";
+  $("#resumen").innerHTML = ""; $("#detalle").style.display = "none";
+  try {
+    const leidos = parsearCSV(fuente);
+    await correrPasos($("#progreso"), [
+      `Leyendo ${leidos.length} movimientos`,
+      "Reconociendo comercios, organismos y personas",
+      "Clasificando por categoría",
+      "Armando resumen y planilla",
+    ], 450);
+    movs = leidos.map(m => ({ ...m, ...clasificar(m) }));
+    pintar();
+  } catch (err) {
+    $("#estado").className = "pill bad"; $("#estado").textContent = "Error";
+    $("#resumen").innerHTML = `<div class="notice bad"><div><div class="t">No pude leer el archivo</div><div class="d">${esc(err.message)}</div></div></div>`;
+  }
+  btn.disabled = false;
+});
+
+function pintar() {
+  // Pasar plata entre cuentas propias no es ni ingreso ni gasto.
+  const reales = movs.filter(m => m.cat !== "Movimientos propios");
+  const ing = reales.filter(m => m.importe > 0).reduce((a, m) => a + m.importe, 0);
+  const egr = reales.filter(m => m.importe < 0).reduce((a, m) => a + m.importe, 0);
+  const sin = movs.filter(m => m.cat === "Sin categoría").length;
+  const auto = movs.filter(m => m.auto !== "no").length;
+  const porCat = {};
+  for (const m of movs) if (m.importe < 0 && m.cat !== "Movimientos propios") porCat[m.cat] = (porCat[m.cat] || 0) - m.importe;
+  const orden = Object.entries(porCat).sort((a, b) => b[1] - a[1]);
+  const max = orden.length ? orden[0][1] : 1;
+  const ventas = movs.filter(m => m.cat === "Ventas y cobros").reduce((a, m) => a + m.importe, 0);
+
+  $("#estado").className = sin ? "pill warn" : "pill ok";
+  $("#estado").textContent = sin ? `${sin} para revisar` : "Todo clasificado";
+  $("#resumen").innerHTML = `
+    <div class="kpis fade-in">
+      <div class="kpi ok"><div class="l">Ingresos</div><div class="v">${fmtARS(ing)}</div></div>
+      <div class="kpi bad"><div class="l">Egresos</div><div class="v">${fmtARS(-egr)}</div></div>
+      <div class="kpi"><div class="l">Resultado del mes</div><div class="v">${fmtARS(ing + egr)}</div></div>
+      <div class="kpi"><div class="l">Clasificados solos</div><div class="v">${Math.round(auto / movs.length * 100)}%</div></div>
+    </div>
+    <div class="fade-in">
+      <div class="side-label" style="margin-top:6px">¿En qué se fue la plata?</div>
+      <div class="bars">${orden.map(([c, v]) => `
+        <div class="bar"><span>${esc(c)}</span><span class="track"><span class="fill" style="width:${(v / max * 100).toFixed(1)}%"></span></span><span class="num" style="text-align:right">${fmtARS(v)}</span></div>`).join("")}
+        <div class="bar"><span><b>Ventas y cobros</b></span><span class="track"><span class="fill in" style="width:${Math.min(100, ventas / max * 100).toFixed(1)}%"></span></span><span style="text-align:right"><b>${fmtARS(ventas)}</b></span></div>
+      </div>
+    </div>
+    ${sin ? `<div class="notice warn fade-in"><div><div class="t">${sin} movimiento${sin > 1 ? "s" : ""} sin categoría</div>
+      <div class="d">Están resaltados en la planilla de abajo. Elegí la categoría y la automatización aprende para la próxima.</div></div></div>`
+      : `<div class="notice ok fade-in"><div><div class="t">Planilla lista para descargar</div><div class="d">Con el resumen por categoría para el cliente.</div></div></div>`}`;
+
+  $("#detalle").style.display = "";
+  $("#detalleSub").textContent = `${movs.length} movimientos`;
+  $("#tabla").innerHTML = `<thead><tr><th>Fecha</th><th>Concepto</th><th class="num">Importe</th><th>Categoría</th></tr></thead><tbody>` +
+    movs.map((m, i) => `<tr class="${m.cat === "Sin categoría" ? "sin" : ""}">
+      <td class="mono">${esc(m.fecha)}</td><td>${esc(m.concepto)}${m.auto === "aprendida" ? ' <span class="learned">· aprendido</span>' : ""}</td>
+      <td class="num ${m.importe < 0 ? "neg" : "pos"}">${fmtARS2(m.importe)}</td>
+      <td><select data-i="${i}">${CATS.map(c => `<option${c === m.cat ? " selected" : ""}>${c}</option>`).join("")}</select></td></tr>`).join("") + "</tbody>";
+}
+
+// Corregir una categoría = aprender una regla para movimientos parecidos.
+$("#tabla").addEventListener("change", e => {
+  const s = e.target.closest("select"); if (!s) return;
+  const m = movs[+s.dataset.i];
+  const clave = norm(m.concepto).replace(/^(transf (recibida|a)|deb automatico|compra debito|pago a proveedor|pago qr)\s+/, "").split(" ").slice(0, 2).join(" ");
+  aprendidas.unshift([new RegExp(clave.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), s.value]);
+  movs = movs.map(x => ({ ...x, ...clasificar(x) }));
+  pintar();
+});
+
+$("#descargar").addEventListener("click", () => {
+  const filas = [["Fecha", "Concepto", "Importe", "Categoría"], ...movs.map(m => [m.fecha, m.concepto, m.importe.toFixed(2).replace(".", ","), m.cat])];
+  filas.push([], ["Resumen por categoría"]);
+  const tot = {};
+  for (const m of movs) tot[m.cat] = (tot[m.cat] || 0) + m.importe;
+  for (const [c, v] of Object.entries(tot)) filas.push(["", c, v.toFixed(2).replace(".", ",")]);
+  descargarCSV("movimientos-ordenados.csv", filas);
+});
+</script>
+</body>
+</html>

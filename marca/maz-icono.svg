@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <title>MAZ Soluciones Inteligentes</title>
+  <rect width="200" height="200" rx="40" fill="#1e3a5f"/>
+  <g transform="translate(100 100) scale(0.8) translate(-100 -100)">
+    <g transform="translate(22 70)" fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M0 60 V0 L20 34 L40 0 V60" stroke="#ffffff"/><path d="M52 60 L72 0 L92 60 M59.5 40 H84.5" stroke="#ffffff"/>
+      <path d="M104 0 H144 L104 60 H146" stroke="#7fb0ea"/>
+    </g>
+    <path d="M166 119 L179 130 L166 141 Z" fill="#7fb0ea"/>
+  </g>
+</svg>

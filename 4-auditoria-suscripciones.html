@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoría de suscripciones · MAZ Soluciones Inteligentes</title>
+<link rel="icon" type="image/svg+xml" href="marca/maz-icono.svg">
+<meta property="og:image" content="https://mazsolucionesinteligentes.github.io/marca/maz-vista-previa.png">
+<link rel="stylesheet" href="estilo.css">
+<style>
+  .big-save { text-align: center; padding: 18px; border-radius: 14px; background: var(--ok-soft); }
+  .big-save .l { font-size: 13px; font-weight: 600; color: var(--ok); }
+  .big-save .v { font-size: 40px; font-weight: 800; color: var(--ok); font-variant-numeric: tabular-nums; line-height: 1.1; margin: 4px 0; }
+  .big-save .s { font-size: 13px; color: var(--ink-2); }
+  .subs { display: grid; gap: 10px; }
+  .sub { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: center;
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--panel); }
+  .sub.off { opacity: .55; }
+  .sub.off .name { text-decoration: line-through; }
+  .sub .name { font-weight: 650; }
+  .sub .fn { color: var(--ink-3); font-size: 12px; }
+  .sub .price { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .sub .price small { display: block; font-weight: 500; color: var(--ink-3); font-size: 11px; }
+  .flags { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 12px; padding: 5px 10px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button.on.si { background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+  .seg button.on.no { background: var(--bad-soft); color: var(--bad); font-weight: 700; }
+  .seg button.on.nose { background: var(--warn-soft); color: var(--warn); font-weight: 700; }
+  .ctrl { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .why { font-size: 12px; color: var(--ink-2); }
+  .tbl-wrap { max-height: 380px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; }
+  .tbl-wrap table { font-size: 12.5px; }
+  .tbl-wrap th { position: sticky; top: 0; background: var(--panel); }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html"><svg class="brand-logo" viewBox="-6 -6 341 80" role="img" aria-label="MAZ Soluciones Inteligentes"><g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"><path class="lg-ink" d="M0 60 V0 L20 34 L40 0 V60 M52 60 L72 0 L92 60 M59.5 40 H84.5"/><path class="lg-acc" d="M104 0 H144 L104 60 H150"/></g><path class="lg-acc-f" d="M148 49 L163 60 L148 71 Z"/><line class="lg-div" x1="180" y1="-2" x2="180" y2="62" stroke-width="1.5"/><text class="lg-txt" x="198" y="25" font-size="21" font-weight="650">Soluciones</text><text class="lg-txt" x="198" y="53" font-size="21" font-weight="650">Inteligentes</text></svg></a>
+  <span class="crumb">/ Demo 4 · Auditoría de suscripciones</span>
+  <span class="spacer"></span>
+  <span class="pill accent">Estudio Jurídico Álvarez (ejemplo)</span>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="kicker">Demo 4 de 5</div>
+    <h1>¿Cuánta plata se va en cosas que nadie usa?</h1>
+    <p>La IA revisa 3 meses de cargos de tarjeta y banco, detecta todo lo que se cobra solo cada mes y
+      encuentra <b>duplicados, aumentos y pruebas gratis que empezaron a cobrar</b>. Marcás qué usan y calcula el ahorro.</p>
+    <ol class="steps">
+      <li><b>1</b>Se leen los resúmenes</li>
+      <li><b>2</b>Se detectan los cobros que se repiten</li>
+      <li><b>3</b>Se marcan duplicados y aumentos</li>
+      <li><b>4</b>Ahorro calculado</li>
+    </ol>
+  </section>
+
+  <div class="split">
+    <section class="card">
+      <div class="card-head"><h2>Cargos de julio a septiembre</h2><span class="sub" id="nCargos"></span></div>
+      <div class="card-body">
+        <div class="tbl-wrap"><table id="cargos"></table></div>
+        <div class="row" style="margin-top:14px"><button class="btn" id="analizar">Analizar con IA</button>
+          <span class="muted small">Montos en pesos con impuestos incluidos.</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Suscripciones encontradas</h2><span class="spacer"></span><span class="pill" id="estado">Esperando</span></div>
+      <div class="card-body stack">
+        <ul class="progress" id="progreso"></ul>
+        <div id="out"><div class="empty"><div class="big"></div>Tocá <b>Analizar con IA</b>.</div></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <div>Esta se vende sola: <b>el cliente ve cuánto ahorra antes de pagarte</b>. Se puede cobrar como un porcentaje del ahorro del primer año.</div>
+    <span class="spacer"></span>
+    <a class="btn ghost small" href="3-movimientos-bancarios.html">← Anterior</a>
+    <a class="btn ghost small" href="5-vigilar-web.html">Siguiente demo →</a>
+  </div>
+</main>
+
+<script src="comun.js"></script>
+<script>
+// Cargos de 3 meses. [comercio como figura en el resumen, jul, ago, sep]
+const DATA = [
+  ["GOOGLE *WORKSPACE ALVAREZ", 47500, 47500, 52250],
+  ["MICROSOFT*365 BUSINESS", 38900, 38900, 38900],
+  ["DROPBOX*BUSINESS", 29800, 29800, 29800],
+  ["ZOOM.US PRO", 21300, 21300, 21300],
+  ["CANVA* PRO", 16900, 16900, 16900],
+  ["ADOBE *ACROBAT PRO", 31200, 31200, 42100],
+  ["LEXDOCTOR GESTION", 58000, 58000, 58000],
+  ["PERSONAL FIBRA 300MB", 26500, 26500, 29900],
+  ["TELECENTRO INTERNET", 24900, 24900, 24900],
+  ["MOVISTAR LINEA 11-3344", 18700, 18700, 18700],
+  ["CLARO LINEA 11-8812", 15400, 15400, 15400],
+  ["NORTON 360", 9900, 9900, 9900],
+  ["AVAST BUSINESS", 8700, 8700, 8700],
+  ["NETFLIX.COM", 13800, 13800, 13800],
+  ["SPOTIFY P1A2B3", 6700, 6700, 6700],
+  ["LINKEDIN PREMIUM", 0, 0, 39800],
+  ["CALENDLY STANDARD", 14200, 14200, 14200],
+];
+// Compras sueltas que NO son suscripciones (para mostrar que las descarta).
+const SUELTOS = [
+  ["LIBRERIA EL ESTUDIANTE", 0, 23400, 0], ["YPF 1543", 32000, 0, 28500], ["MERCADOLIBRE*TONER", 0, 61200, 0],
+  ["COLEGIO ABOGADOS CUOTA", 0, 0, 45000], ["CAFE MARTINEZ", 8400, 0, 0],
+];
+
+// Qué hace cada servicio, para encontrar duplicados.
+const SERVICIOS = [
+  [/workspace/, "Google Workspace", "Correo, documentos y almacenamiento", ["oficina", "almacenamiento", "videollamadas"]],
+  [/microsoft|365/, "Microsoft 365", "Correo y documentos", ["oficina"]],
+  [/dropbox/, "Dropbox Business", "Almacenamiento en la nube", ["almacenamiento"]],
+  [/zoom/, "Zoom Pro", "Videollamadas", ["videollamadas"]],
+  [/canva/, "Canva Pro", "Diseño de piezas", ["diseno"]],
+  [/adobe|acrobat/, "Adobe Acrobat Pro", "Editar y firmar PDF", ["pdf"]],
+  [/lexdoctor/, "Lex Doctor", "Gestión de expedientes", ["gestion"]],
+  [/personal fibra/, "Personal Fibra", "Internet de la oficina", ["internet"]],
+  [/telecentro/, "Telecentro", "Internet de la oficina", ["internet"]],
+  [/movistar/, "Movistar (línea 3344)", "Telefonía móvil", ["movil"]],
+  [/claro/, "Claro (línea 8812)", "Telefonía móvil", ["movil"]],
+  [/norton/, "Norton 360", "Antivirus", ["antivirus"]],
+  [/avast/, "Avast Business", "Antivirus", ["antivirus"]],
+  [/netflix/, "Netflix", "Streaming", ["personal"]],
+  [/spotify/, "Spotify", "Música", ["personal"]],
+  [/linkedin/, "LinkedIn Premium", "Red profesional", ["linkedin"]],
+  [/calendly/, "Calendly", "Agenda de turnos online", ["agenda"]],
+];
+
+const todos = [...DATA, ...SUELTOS];
+$("#nCargos").textContent = `${todos.reduce((a, r) => a + r.slice(1).filter(v => v).length, 0)} cargos`;
+const meses = ["Jul", "Ago", "Sep"];
+const filasCargos = [];
+todos.forEach(r => r.slice(1).forEach((v, m) => v && filasCargos.push([m, r[0], v])));
+filasCargos.sort((a, b) => a[0] - b[0] || a[1].localeCompare(b[1]));
+$("#cargos").innerHTML = `<thead><tr><th>Mes</th><th>Comercio</th><th class="num">Importe</th></tr></thead><tbody>` +
+  filasCargos.map(([m, c, v]) => `<tr><td>${meses[m]}</td><td class="mono">${esc(c)}</td><td class="num">${fmtARS(v)}</td></tr>`).join("") + "</tbody>";
+
+// ---------- análisis ----------
+function analizar() {
+  const subs = [];
+  for (const [nombreCargo, ...montos] of todos) {
+    const veces = montos.filter(v => v).length;
+    const ultimo = montos[2];
+    const nueva = montos[0] === 0 && montos[1] === 0 && ultimo > 0;
+    const conocido = SERVICIOS.find(([re]) => re.test(norm(nombreCargo)));
+    // Suscripción = se cobra todos los meses, o es un servicio conocido que arrancó a cobrar.
+    if (!(veces === 3 || (nueva && conocido))) continue;
+    const [, nombre, fn, grupos] = conocido || [null, nombreCargo, "Cargo mensual", []];
+    const previo = montos[1] || montos[0];
+    const aumento = previo && ultimo > previo ? (ultimo - previo) / previo : 0;
+    subs.push({ nombre, fn, grupos, mensual: ultimo, aumento, nueva, flags: [], uso: "si", sugerido: "si", motivo: "" });
+  }
+  // Duplicados: dos servicios que cumplen la misma función.
+  const porGrupo = {};
+  subs.forEach(s => s.grupos.forEach(g => (porGrupo[g] = porGrupo[g] || []).push(s)));
+  const nombresGrupo = { oficina: "correo y documentos", almacenamiento: "almacenamiento", videollamadas: "videollamadas",
+    internet: "internet", movil: "líneas de celular", antivirus: "antivirus" };
+  for (const [g, lista] of Object.entries(porGrupo)) {
+    if (lista.length < 2 || !nombresGrupo[g]) continue;
+    // Se queda el más completo (Workspace) o el más caro; los otros se sugieren dar de baja.
+    const quedar = lista.find(s => s.nombre === "Google Workspace") || [...lista].sort((a, b) => b.mensual - a.mensual)[0];
+    for (const s of lista) {
+      if (s === quedar) continue;
+      s.flags.push(g === "movil" ? ["warn", `Hay otra línea pagándose: ${quedar.nombre}`]
+                                 : ["bad", `Duplicado: ${nombresGrupo[g]} ya lo cubre ${quedar.nombre}`]);
+      if (g !== "movil") { s.sugerido = "no"; s.motivo = `Hace lo mismo que ${quedar.nombre}.`; }
+      else { s.sugerido = "nose"; s.motivo = "¿Las dos líneas se usan? Revisar quién tiene cada una."; }
+    }
+  }
+  for (const s of subs) {
+    if (s.aumento >= 0.05) s.flags.push(["warn", `Aumentó ${fmtPct(s.aumento)} en septiembre`]);
+    if (s.nueva) { s.flags.push(["accent", "Empezó a cobrar este mes (¿era prueba gratis?)"]); s.sugerido = "nose"; s.motivo = "Revisar si alguien la contrató a propósito."; }
+    if (s.grupos.includes("personal")) { s.flags.push(["warn", "Parece un gasto personal en la tarjeta del estudio"]); s.sugerido = "no"; s.motivo = "Pasarlo a una tarjeta personal."; }
+  }
+  return subs.sort((a, b) => (b.flags.length > 0) - (a.flags.length > 0) || b.mensual - a.mensual);
+}
+
+let subs = [];
+$("#analizar").addEventListener("click", async () => {
+  const btn = $("#analizar"); btn.disabled = true;
+  $("#estado").className = "pill accent"; $("#estado").textContent = "Analizando…";
+  $("#out").innerHTML = "";
+  await correrPasos($("#progreso"), [
+    "Leyendo 3 meses de resúmenes",
+    "Agrupando cobros del mismo comercio",
+    "Separando suscripciones de compras sueltas",
+    "Buscando duplicados, aumentos y pruebas gratis",
+  ], 480);
+  subs = analizar();
+  pintar();
+  btn.disabled = false;
+});
+
+function pintar() {
+  const total = subs.reduce((a, s) => a + s.mensual, 0);
+  const ahorro = subs.filter(s => s.uso === "no").reduce((a, s) => a + s.mensual, 0);
+  const sugerible = subs.filter(s => s.sugerido === "no").reduce((a, s) => a + s.mensual, 0);
+  const alertas = subs.filter(s => s.flags.length).length;
+  $("#estado").className = "pill warn"; $("#estado").textContent = `${alertas} con alertas`;
+  $("#out").innerHTML = `
+    <div class="kpis fade-in">
+      <div class="kpi"><div class="l">Suscripciones</div><div class="v">${subs.length}</div></div>
+      <div class="kpi"><div class="l">Gasto por mes</div><div class="v">${fmtARS(total)}</div></div>
+      <div class="kpi"><div class="l">Gasto por año</div><div class="v">${fmtARS(total * 12)}</div></div>
+    </div>
+    <div class="big-save fade-in">
+      <div class="l">AHORRO SI DAN DE BAJA LO MARCADO “NO”</div>
+      <div class="v">${fmtARS(ahorro * 12)} <span style="font-size:18px">por año</span></div>
+      <div class="s">${fmtARS(ahorro)} por mes · ${subs.filter(s => s.uso === "no").length} servicios marcados</div>
+      <div class="row" style="justify-content:center; margin-top:10px">
+        <button class="btn small" id="sugerir">Aplicar recomendaciones de la IA (${fmtARS(sugerible * 12)}/año)</button>
+        <button class="btn ghost small" id="reset">Desmarcar todo</button>
+      </div>
+    </div>
+    <div class="subs">${subs.map((s, i) => `
+      <div class="sub ${s.uso === "no" ? "off" : ""}">
+        <div><div class="name">${esc(s.nombre)}</div><div class="fn">${esc(s.fn)}</div></div>
+        <div class="price">${fmtARS(s.mensual)}<small>por mes</small></div>
+        ${s.flags.length ? `<div class="flags">${s.flags.map(([k, t]) => `<span class="pill ${k}">${esc(t)}</span>`).join("")}</div>` : ""}
+        <div class="ctrl"><span class="why">${s.motivo ? "" + esc(s.motivo) : ""}</span>
+          <span class="row" style="gap:8px"><span class="small muted">¿La usan?</span><span class="seg" data-i="${i}">
+            <button class="si ${s.uso === "si" ? "on" : ""}" data-v="si">Sí</button>
+            <button class="no ${s.uso === "no" ? "on" : ""}" data-v="no">No</button>
+            <button class="nose ${s.uso === "nose" ? "on" : ""}" data-v="nose">No sé</button>
+          </span></span></div>
+      </div>`).join("")}</div>`;
+}
+
+$("#out").addEventListener("click", e => {
+  if (e.target.id === "sugerir") { subs.forEach(s => s.uso = s.sugerido); return pintar(); }
+  if (e.target.id === "reset") { subs.forEach(s => s.uso = "si"); return pintar(); }
+  const b = e.target.closest(".seg button"); if (!b) return;
+  subs[+b.parentElement.dataset.i].uso = b.dataset.v;
+  pintar();
+});
+</script>
+</body>
+</html>
