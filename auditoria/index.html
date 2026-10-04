@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Auditoría de suscripciones · MAZ Soluciones Inteligentes</title>
+<link rel="stylesheet" href="../estilo.css">
+<style>
+  .w { max-width: 980px; margin: 0 auto; padding: 24px 18px 80px; }
+  .privado { background: var(--ok-soft); color: var(--ok); border-radius: 12px; padding: 12px 16px; font-size: 14px; margin: 14px 0 22px; }
+  .privado b { color: var(--ok); }
+  .paso { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+  .paso h2 { font-size: 18px; margin: 0 0 4px; } .paso .bajada { color: var(--ink-2); font-size: 14px; margin: 0 0 12px; }
+  .drop { border: 2px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center; color: var(--ink-2); cursor: pointer; }
+  .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  textarea { width: 100%; min-height: 120px; font: 13px/1.5 var(--mono); border: 1px solid var(--line); border-radius: 10px; padding: 10px; box-sizing: border-box; }
+  .archivos { font-size: 13px; color: var(--ink-2); margin: 8px 0 0; }
+  .fila { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .fila label { font-size: 14px; color: var(--ink-2); }
+  .fila input[type=number] { width: 130px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+  .resumen-lectura { font-size: 14px; color: var(--ink-2); }
+  .subs { display: grid; gap: 10px; }
+  .sub { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--panel); }
+  .sub.no { background: var(--bad-soft); } .sub.si { opacity: .8; } .sub.oculta { display: none; }
+  .sub .nombre { font-weight: 650; } .sub .det { color: var(--ink-3); font-size: 12px; }
+  .sub .precio { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .sub .precio small { display: block; font-weight: 500; color: var(--ink-3); font-size: 11px; }
+  .avisos { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+  .aviso { font-size: 12px; border-radius: 99px; padding: 2px 10px; background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+  .aviso.duplicado, .aviso.doble { background: var(--bad-soft); color: var(--bad); }
+  .ctrl { grid-column: 1 / -1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 13px; padding: 6px 12px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button.on.si { background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+  .seg button.on.no { background: var(--bad-soft); color: var(--bad); font-weight: 700; }
+  .seg button.on.nose { background: var(--warn-soft); color: var(--warn); font-weight: 700; }
+  .link { background: none; border: 0; color: var(--ink-3); font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; padding: 0; }
+  .ahorro { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .big { text-align: center; padding: 18px; border-radius: 14px; background: var(--ok-soft); }
+  .big .l { font-size: 13px; font-weight: 600; color: var(--ok); }
+  .big .v { font-size: 34px; font-weight: 800; color: var(--ok); font-variant-numeric: tabular-nums; line-height: 1.15; }
+  .big .s { font-size: 13px; color: var(--ink-2); }
+  .maz { border: 2px solid var(--accent); border-radius: 14px; padding: 18px; text-align: center; }
+  .maz .v { font-size: 30px; font-weight: 800; }
+  .oculto { display: none; }
+  details { font-size: 13px; color: var(--ink-2); margin-top: 10px; }
+  @media (max-width: 640px) { .ahorro { grid-template-columns: 1fr; } }
+  @media print {
+    .no-print, .ctrl, .drop, textarea, .privado { display: none !important; }
+    .paso { border: 0; padding: 0; }
+    .sub { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="w">
+  <header style="display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px">
+    <img src="../marca/maz-logo.svg" alt="MAZ" style="height:38px" onerror="this.style.display='none'">
+    <div><b style="font-size:18px">Auditoría de suscripciones y cobros fijos</b><br><span style="color:var(--ink-3);font-size:13px">MAZ Soluciones Inteligentes</span></div>
+  </header>
+
+  <div class="privado no-print"><b>Tus datos no salen de esta computadora.</b> Esta página analiza los archivos dentro de tu navegador: no los sube a ningún lado, ni a MAZ ni a internet. Si querés comprobarlo, una vez abierta podés desconectar el wifi y funciona igual.</div>
+
+  <section class="paso no-print" id="paso1">
+    <h2>1 · Cargá tus resúmenes de los últimos 3 meses</h2>
+    <p class="bajada">De la tarjeta y del banco. Mejor en Excel o CSV (en el homebanking suele decir “Exportar” o “Descargar movimientos”). Si la tarjeta solo te da PDF: abrí el PDF, seleccioná todo (Cmd+A o Ctrl+A), copiá y pegalo abajo.</p>
+    <div class="drop" id="drop">Arrastrá acá los archivos Excel o CSV, o <u>tocá para elegirlos</u>.<input type="file" id="archivo" multiple accept=".xlsx,.xls,.csv,.txt" hidden></div>
+    <div class="archivos" id="archivos"></div>
+    <p class="bajada" style="margin-top:14px">Texto copiado de un PDF (podés pegar varios resúmenes, uno debajo del otro):</p>
+    <textarea id="texto" placeholder="Pegá acá el texto del resumen…"></textarea>
+    <div class="fila">
+      <button class="btn" id="analizar">Analizar</button>
+      <label>Dólar tarjeta (para pasar a pesos los cobros en dólares): $ <input type="number" id="dolar" min="0" step="1" placeholder="ej. 1600"></label>
+    </div>
+    <p class="resumen-lectura" id="lectura"></p>
+  </section>
+
+  <section class="paso oculto" id="paso2">
+    <h2>2 · Marcá qué usan y qué no</h2>
+    <p class="bajada">Estos son los cobros que se repiten. Los que tienen avisos en rojo o naranja son los primeros a revisar. Si algo no es una suscripción, tocá “no es un cobro fijo”.</p>
+    <div class="subs" id="subs"></div>
+    <details class="no-print"><summary>Ver líneas que no se pudieron leer</summary><pre id="ignoradas" style="white-space:pre-wrap"></pre></details>
+  </section>
+
+  <section class="paso oculto" id="paso3">
+    <h2>3 · Lo que podés ahorrar</h2>
+    <div class="ahorro">
+      <div class="big"><div class="l">AHORRO POR MES</div><div class="v" id="ahMes">$ 0</div><div class="s" id="ahMesS"></div></div>
+      <div class="big"><div class="l">AHORRO POR AÑO</div><div class="v" id="ahAnio">$ 0</div><div class="s">dando de baja lo marcado “No lo usamos”</div></div>
+    </div>
+    <p class="bajada" id="totalFijo" style="margin-top:12px"></p>
+    <div class="fila no-print">
+      <button class="btn" id="imprimir">Descargar informe (PDF)</button>
+      <button class="btn ghost" id="verMaz">Resumen para MAZ</button>
+    </div>
+    <div class="maz oculto" id="maz">
+      <div style="font-size:13px;color:var(--ink-3);font-weight:600">RESUMEN PARA MAZ · solo el total, sin detalles</div>
+      <div class="v" id="mazV"></div>
+      <div id="mazS" style="color:var(--ink-2)"></div>
+      <p style="font-size:13px;color:var(--ink-3)">Sacale una captura a este recuadro y mandásela a MAZ.</p>
+    </div>
+  </section>
+</div>
+
+<script src="xlsx.full.min.js"></script>
+<script src="motor.js"></script>
+<script>
+(function () {
+  const M = window.MotorAuditoria;
+  const $ = id => document.getElementById(id);
+  const archivos = []; // { nombre, movimientos, ignoradas }
+  let items = [], estado = {}; // estado[id] = { uso: 'si'|'no'|'nose', oculto, moneda }
+
+  const pesos = n => '$ ' + Math.round(n).toLocaleString('es-AR');
+  const dinero = (n, mon) => mon === 'USD' ? 'US$ ' + n.toLocaleString('es-AR', { maximumFractionDigits: 2 }) : pesos(n);
+  const escapar = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // ---- carga de archivos (todo local) ----
+  const drop = $('drop'), input = $('archivo');
+  drop.onclick = () => input.click();
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); leerArchivos(e.dataTransfer.files); };
+  input.onchange = () => leerArchivos(input.files);
+
+  function leerArchivos(lista) {
+    for (const f of lista) {
+      const lector = new FileReader();
+      lector.onload = () => {
+        try {
+          const libro = XLSX.read(new Uint8Array(lector.result), { type: 'array', cellDates: true, raw: false });
+          let movs = [], ign = [];
+          for (const hoja of libro.SheetNames) {
+            const filas = XLSX.utils.sheet_to_json(libro.Sheets[hoja], { header: 1, defval: '', raw: true });
+            const r = M.leerTabla(filas, f.name);
+            movs = movs.concat(r.movimientos); ign = ign.concat(r.ignoradas);
+          }
+          archivos.push({ nombre: f.name, movimientos: movs, ignoradas: ign });
+        } catch (e) {
+          archivos.push({ nombre: f.name, movimientos: [], ignoradas: ['No se pudo leer el archivo: ' + e.message] });
+        }
+        mostrarArchivos();
+      };
+      lector.readAsArrayBuffer(f);
+    }
+  }
+  function mostrarArchivos() {
+    $('archivos').innerHTML = archivos.map(a => '✔ ' + escapar(a.nombre) + ' · ' + a.movimientos.length + ' consumos leídos').join('<br>');
+  }
+
+  // ---- análisis ----
+  $('analizar').onclick = () => {
+    let movs = [], ign = [];
+    for (const a of archivos) { movs = movs.concat(a.movimientos); ign = ign.concat(a.ignoradas); }
+    if ($('texto').value.trim()) {
+      const r = M.leerTexto($('texto').value, 'texto pegado');
+      movs = movs.concat(r.movimientos); ign = ign.concat(r.ignoradas);
+    }
+    if (!movs.length) { $('lectura').textContent = 'No encontré consumos. Revisá que el archivo tenga fecha, descripción e importe, o pegá el texto del resumen.'; return; }
+    const res = M.analizar(movs);
+    items = res.items; estado = {};
+    for (const it of items) estado[it.id] = { uso: 'nose', oculto: false, moneda: it.moneda };
+    $('lectura').textContent = 'Leí ' + movs.length + ' consumos de ' + res.meses.length + ' mes(es) (' + res.meses.map(M.nombreMes).join(', ') + ') y encontré ' + items.length + ' cobros que se repiten.'
+      + (res.meses.length < 2 ? ' Con un solo mes no se pueden ver repeticiones: cargá al menos 2 o 3 meses.' : '');
+    $('ignoradas').textContent = ign.length ? ign.slice(0, 200).join('\n') : 'Ninguna.';
+    pintar();
+    $('paso2').classList.remove('oculto'); $('paso3').classList.remove('oculto');
+    $('paso2').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  function pintar() {
+    $('subs').innerHTML = items.map(it => {
+      const e = estado[it.id];
+      return '<div class="sub ' + (e.uso !== 'nose' ? e.uso : '') + (e.oculto ? ' oculta' : '') + '" data-id="' + escapar(it.id) + '">'
+        + '<div><div class="nombre">' + escapar(it.nombre) + '</div><div class="det">' + escapar(it.categoria) + ' · ' + escapar(it.detalle) + ' · ' + it.meses + ' mes(es)</div></div>'
+        + '<div class="precio">' + dinero(it.mensual, e.moneda) + '<small>por mes</small></div>'
+        + (it.avisos.length ? '<div class="avisos">' + it.avisos.map(a => '<span class="aviso ' + a.tipo + '">' + escapar(a.texto) + '</span>').join('') + '</div>' : '')
+        + '<div class="ctrl"><span class="seg">'
+        + ['si', 'no', 'nose'].map(v => '<button data-uso="' + v + '" class="' + v + (e.uso === v ? ' on' : '') + '">' + { si: 'Lo usamos', no: 'No lo usamos', nose: 'No sé' }[v] + '</button>').join('')
+        + '</span> <button class="link" data-moneda>' + (e.moneda === 'USD' ? 'es en pesos' : 'es en dólares') + '</button>'
+        + ' <button class="link" data-ocultar>no es un cobro fijo</button></div></div>';
+    }).join('') || '<p>No encontré cobros que se repitan.</p>';
+    calcular();
+  }
+
+  $('subs').onclick = ev => {
+    const b = ev.target.closest('button'); if (!b) return;
+    const id = b.closest('.sub').dataset.id, e = estado[id];
+    if (b.dataset.uso) e.uso = b.dataset.uso;
+    if (b.hasAttribute('data-moneda')) e.moneda = e.moneda === 'USD' ? '$' : 'USD';
+    if (b.hasAttribute('data-ocultar')) e.oculto = true;
+    pintar();
+  };
+  $('dolar').oninput = calcular;
+
+  function enPesos(it) {
+    const e = estado[it.id], dolar = Number($('dolar').value) || 0;
+    return e.moneda === 'USD' ? (dolar ? it.mensual * dolar : 0) : it.mensual;
+  }
+
+  function calcular() {
+    const dolar = Number($('dolar').value) || 0;
+    const visibles = items.filter(it => !estado[it.id].oculto);
+    const no = visibles.filter(it => estado[it.id].uso === 'no');
+    const mes = no.reduce((s, it) => s + enPesos(it), 0);
+    const usdSinDolar = no.filter(it => estado[it.id].moneda === 'USD' && !dolar);
+    $('ahMes').textContent = pesos(mes);
+    $('ahAnio').textContent = pesos(mes * 12);
+    $('ahMesS').textContent = no.length + ' cobro(s) para dar de baja' + (usdSinDolar.length ? ' · falta el valor del dólar para sumar ' + usdSinDolar.length + ' en dólares' : '');
+    const total = visibles.reduce((s, it) => s + enPesos(it), 0);
+    $('totalFijo').textContent = 'En total se pagan ' + pesos(total) + ' por mes en cobros fijos (' + pesos(total * 12) + ' por año).';
+    $('mazV').textContent = 'Ahorro anual: ' + pesos(mes * 12);
+    $('mazS').textContent = no.length + ' servicio(s) para dar de baja · ' + new Date().toLocaleDateString('es-AR');
+  }
+
+  $('imprimir').onclick = () => window.print();
+  $('verMaz').onclick = () => $('maz').classList.toggle('oculto');
+})();
+</script>
+</body>
+</html>
