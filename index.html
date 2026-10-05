@@ -66,76 +66,105 @@
     .how { grid-template-columns: 1fr; }
     .how div { border-right: 0; border-bottom: 1px solid var(--line); }
   }
+  .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+  .sol.custom { border-style: dashed; border-color: var(--accent-2); background: var(--accent-soft); }
+  .sol.custom .ic { background: var(--accent); color: var(--accent-ink); }
+  .faq { display: grid; gap: 10px; }
+  .faq details { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { margin: 8px 0 0; color: var(--ink-2); }
 </style>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="index.html"><svg class="brand-logo" viewBox="-6 -6 341 80" role="img" aria-label="MAZ Soluciones Inteligentes"><g fill="none" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"><path class="lg-ink" d="M0 60 V0 L20 34 L40 0 V60 M52 60 L72 0 L92 60 M59.5 40 H84.5"/><path class="lg-acc" d="M104 0 H144 L104 60 H150"/></g><path class="lg-acc-f" d="M148 49 L163 60 L148 71 Z"/><line class="lg-div" x1="180" y1="-2" x2="180" y2="62" stroke-width="1.5"/><text class="lg-txt" x="198" y="25" font-size="21" font-weight="650">Soluciones</text><text class="lg-txt" x="198" y="53" font-size="21" font-weight="650">Inteligentes</text></svg></a>
   <span class="spacer"></span>
-  <a class="btn ghost small" href="#soluciones">Ver soluciones</a>
+  <a class="btn ghost small" href="#soluciones">Ver ejemplos</a>
 </header>
 
 <main class="wrap">
   <section class="intro">
     <div>
-      <div class="kicker">Automatización con inteligencia artificial para pymes</div>
-      <h1>Menos tareas repetitivas.<br>Más tiempo para tu negocio.</h1>
-      <p>Presupuestos, pedidos, extractos bancarios, gastos y controles que hoy alguien hace a mano todos los días,
-        resueltos con la ayuda de inteligencia artificial, sobre las herramientas que ya usás: mail, planillas y WhatsApp.</p>
+      <div class="kicker">Automatizaciones para pymes · 100% a distancia</div>
+      <h1>Esa tarea que alguien hace a mano todos los días, que se haga sola.</h1>
+      <p>Contestar presupuestos, cargar pedidos, ordenar extractos del banco, revisar gastos o mirar páginas todos los días.
+        Lo dejamos funcionando sobre lo que ya usás —tu mail y tus planillas de Google—, sin programas nuevos y sin que tengas que saber de computación.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#soluciones">Ver ejemplos</a>
+        <a class="btn ghost" href="https://wa.me/5491150196418?text=Hola%2C%20vi%20la%20p%C3%A1gina%20de%20MAZ%20y%20quer%C3%ADa%20consultar" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+      </div>
     </div>
     <div class="facts">
-      <div><b>Sin sistemas nuevos</b>Funciona sobre tu correo, tus planillas y tus cuentas actuales.</div>
-      <div><b>Prueba antes de pagar</b>Te mostramos el resultado con tus propios datos.</div>
-      <div><b>IA con supervisión</b>La inteligencia artificial hace el trabajo pesado; lo dudoso siempre pasa por una persona.</div>
+      <div><b>Nada que instalar</b>Funciona sobre tu correo y tus planillas. Ni siquiera hace falta dejar la compu prendida.</div>
+      <div><b>Lo probás antes de pagar</b>Te mostramos el resultado con tus propios datos.</div>
+      <div><b>Vos tenés el control</b>Nada sale sin que lo revises. Lo dudoso siempre pasa por una persona.</div>
+      <div><b>Tus datos son tuyos</b>Todo queda en tus cuentas. Nunca te pedimos contraseñas.</div>
     </div>
   </section>
 
-  <div class="section-title" id="soluciones"><h2>Soluciones</h2><span>Cada una tiene una demostración interactiva</span></div>
+  <div class="section-title" id="soluciones"><h2>Algunos ejemplos</h2><span>Tocá cualquiera para probarlo vos mismo</span></div>
 
   <div class="grid">
     <a class="sol" href="1-presupuestos-por-mail.html">
       <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="n">01</span></div>
       <h3>Presupuestos automáticos por mail</h3>
-      <p>La IA entiende el pedido aunque esté escrito a la criolla, arma el presupuesto con tu lista de precios y lo deja listo para enviar.</p>
+      <p>Te piden precios por mail y en minutos tenés la respuesta armada con tu lista de precios y el envío. Vos solo la revisás y tocás enviar.</p>
       <div class="for">Ferreterías · Corralones · Distribuidoras</div>
-      <span class="go">Ver demostración →</span>
+      <span class="go">Probar el ejemplo →</span>
     </a>
     <a class="sol" href="2-pedido-aprobado.html">
       <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg></span><span class="n">02</span></div>
       <h3>Del “sí” del cliente al pedido cargado</h3>
-      <p>Cuando el cliente aprueba, el pedido se carga con sus cambios y la fecha de entrega. Si pregunta algo, te avisa.</p>
+      <p>El cliente responde “dale” y el pedido queda anotado solo, con sus cambios y la fecha de entrega. Si pregunta algo, te avisa a vos.</p>
       <div class="for">Mayoristas · Proveedores gastronómicos</div>
-      <span class="go">Ver demostración →</span>
+      <span class="go">Probar el ejemplo →</span>
     </a>
     <a class="sol" href="3-movimientos-bancarios.html">
       <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18"/><path d="m12 3 9 5H3l9-5Z"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 21h18"/></svg></span><span class="n">03</span></div>
       <h3>Movimientos bancarios ordenados</h3>
-      <p>Del extracto del banco a una planilla clasificada por categoría, con resumen del mes. Aprende de cada corrección.</p>
+      <p>Pegás el extracto del banco y queda ordenado por categoría, con el resumen del mes. Lo corregís una vez y aprende.</p>
       <div class="for">Estudios contables · Administraciones</div>
-      <span class="go">Ver demostración →</span>
+      <span class="go">Probar el ejemplo →</span>
     </a>
     <a class="sol" href="4-auditoria-suscripciones.html">
       <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/><path d="M11 8.5v5M8.5 11h5"/></svg></span><span class="n">04</span></div>
       <h3>Auditoría de gastos y suscripciones</h3>
-      <p>La IA detecta lo que se cobra todos los meses, los servicios duplicados y los aumentos, y calcula cuánto podés ahorrar.</p>
+      <p>Encuentra lo que te cobran todos los meses, lo que está repetido y lo que aumentó, y te dice cuánto podés ahorrar por año.</p>
       <div class="for">Estudios · Oficinas · Cualquier pyme</div>
-      <span class="go">Ver demostración →</span>
+      <span class="go">Probar el ejemplo →</span>
     </a>
     <a class="sol" href="5-vigilar-web.html">
       <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span><span class="n">05</span></div>
       <h3>Monitoreo de páginas y alertas</h3>
-      <p>Controla por vos la lista del mayorista o tus expedientes, y te avisa al celular solo cuando hay algo importante.</p>
-      <div class="for">Comercios · Estudios jurídicos · Licitaciones</div>
-      <span class="go">Ver demostración →</span>
+      <p>Mira por vos la lista del mayorista o un portal de licitaciones, y te avisa al celular solo cuando cambia algo que te importa.</p>
+      <div class="for">Comercios · Licitaciones · Inmobiliarias</div>
+      <span class="go">Probar el ejemplo →</span>
+    </a>
+    <a class="sol custom" href="https://wa.me/5491150196418?text=Hola%2C%20tengo%20otra%20tarea%20repetitiva%20que%20quiero%20dejar%20de%20hacer%20a%20mano%3A%20" target="_blank" rel="noopener">
+      <div class="top"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="n">06</span></div>
+      <h3>¿Tu tarea es otra? También la hacemos</h3>
+      <p>Si en tu negocio hay algo que alguien repite todos los días —copiar datos de un lado a otro, mandar los mismos mails, armar el mismo informe—, contanos. Lo charlamos sin compromiso y te decimos si se puede automatizar y cuánto saldría.</p>
+      <div class="for">A medida · Para cualquier rubro</div>
+      <span class="go">Contanos tu caso por WhatsApp →</span>
     </a>
   </div>
 
-  <div class="section-title" style="margin-top:44px"><h2>Cómo trabajamos</h2><span>De la primera charla a la solución funcionando</span></div>
+  <div class="section-title" style="margin-top:44px"><h2>Cómo trabajamos</h2><span>Todo a distancia: WhatsApp, mail y como mucho una videollamada</span></div>
   <section class="how">
-    <div><span class="k">PASO 1</span><b>Diagnóstico</b><span>Una charla de 20 minutos para entender qué tarea te consume más tiempo.</span></div>
+    <div><span class="k">PASO 1</span><b>Charla</b><span>Nos contás por WhatsApp qué tarea te consume más tiempo. Sin compromiso.</span></div>
     <div><span class="k">PASO 2</span><b>Prueba con tus datos</b><span>Ves el resultado funcionando antes de tomar cualquier decisión.</span></div>
-    <div><span class="k">PASO 3</span><b>Implementación</b><span>Queda instalado sobre tus herramientas, sin cambiar tu forma de trabajar.</span></div>
+    <div><span class="k">PASO 3</span><b>Puesta en marcha</b><span>Lo dejamos funcionando en una videollamada corta, sobre tus herramientas.</span></div>
     <div><span class="k">PASO 4</span><b>Seguimiento</b><span>Mantenimiento, ajustes y soporte mensual para que siga funcionando.</span></div>
+  </section>
+
+  <div class="section-title" style="margin-top:44px"><h2>Preguntas frecuentes</h2><span>Lo que casi todos nos preguntan</span></div>
+  <section class="faq">
+    <details><summary>¿Tengo que instalar algún programa?</summary><p>No. Funciona sobre tu cuenta de Google (Gmail y planillas) o directamente en el navegador. No hace falta dejar la computadora prendida.</p></details>
+    <details><summary>¿Qué pasa con mis datos?</summary><p>Quedan en tus cuentas. No te pedimos contraseñas ni claves del banco, y en las soluciones con datos sensibles (bancos, tarjetas) la información nunca pasa por nosotros.</p></details>
+    <details><summary>¿Y si se equivoca?</summary><p>Lo que no entiende no lo inventa: te lo marca para que lo veas vos. En los presupuestos, nada se envía sin que lo revises.</p></details>
+    <details><summary>No sé mucho de computación, ¿puedo usarlo igual?</summary><p>Sí. Lo dejamos andando nosotros y te queda funcionando solo. Te explicamos lo poco que tenés que hacer, paso a paso.</p></details>
+    <details><summary>¿Cuánto cuesta?</summary><p>Depende de la solución. Siempre es un precio fijo, sin sorpresas, y lo ves funcionando con tus datos antes de decidir.</p></details>
+    <details><summary>¿Trabajan en todo el país?</summary><p>Sí: todo se hace a distancia, por WhatsApp, mail y videollamada.</p></details>
   </section>
 
   <section class="contact">
@@ -147,7 +176,7 @@
     </div>
   </section>
 
-  <p class="note">Las demostraciones usan datos ficticios y funcionan sin conexión a internet.</p>
+  <p class="note">Los ejemplos usan datos inventados y funcionan sin conexión a internet: podés probarlos tranquilo.</p>
 </main>
 </body>
 </html>
